@@ -1,0 +1,29 @@
+# Python cache fajlovi
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtuelno okruženje
+venvNMF/
+
+# Flask instance folder i baze
+instance/
+*.db
+*.sqlite3
+
+# Konfiguracioni fajlovi
+.env
+.env.*
+*.env
+
+# PDF fajlovi
+nmf_app/static/payment_slips/
+
+# VSCode i drugi editori
+.vscode/
+.idea/
+*.swp
+
+# Ostalo
+.DS_Store
+Thumbs.db

@@ -1,0 +1,6 @@
+<h1>Uplatnica</h1>
+<p>Uplatnica je generisana za kupca {{ uplatnica.kupac.ime_prezime }}.</p>
+<p>Uplatnica ima ukupan iznos od {{ uplatnica.ukupan_iznos }} RSD.</p>
+{% for stavka in stavke %}
+    <p>{{ stavka.naziv_karte }}: {{ stavka.količina }} x {{ stavka.cena }} = {{ stavka.količina * stavka.cena }}</p>
+{% endfor %}
