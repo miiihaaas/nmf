@@ -36,28 +36,18 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.home') }}">
-                            <i class="fas fa-home me-1"></i> Početna
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.payment_slips') }}">
-                            <i class="fas fa-file-invoice me-1"></i> Pregled uplatnica
+                            <i class="fas fa-file-invoice me-1"></i> Uplatnice
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.import_xml') }}">
-                            <i class="fas fa-ticket-alt me-1"></i> Učitavanje izvoda
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-info-circle me-1"></i> O festivalu
+                        <a class="nav-link" href="{{ url_for('main.payments') }}">
+                            <i class="fas fa-ticket-alt me-1"></i> Izvodi
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
-                            <i class="fas fa-envelope me-1"></i> Kontakt
+                            <i class="fas fa-campground me-1"></i> Statistika
                         </a>
                     </li>
                 </ul>
