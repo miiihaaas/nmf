@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}Natural Mystic Festival - Početna{% endblock %}
+
+{% block content %}
+<!-- Hero sekcija -->
+<section class="text-center py-5">
+    <h1 class="display-4 fw-bold">Natural Mystic Festival</h1>
+    <div class="reggae-stripes mx-auto my-3" style="max-width: 300px;"></div>
+    <p class="lead">Festival reggae muzike i kulture</p>
+    
+    <!-- Tri velika dugmeta -->
+    <div class="buttons-container mt-5">
+        <a href="{{ url_for('main.payment_slips') }}" class="btn btn-reggae btn-reggae-green btn-lg py-4">
+            <i class="fas fa-file-alt me-2"></i> Pregled uplatnica
+        </a>
+        <a href="{{ url_for('main.import_xml') }}" class="btn btn-reggae btn-reggae-yellow btn-lg py-4">
+            <i class="fas fa-ticket-alt me-2"></i> Učitavanje izvoda
+        </a>
+        <a href="#" class="btn btn-reggae btn-reggae-red btn-lg py-4">
+            <i class="fas fa-campground me-2"></i> Upisani učenici
+        </a>
+    </div>
+</section>
+
+
+{% endblock %}

@@ -1,36 +1,56 @@
 from nmf_app import db
 from datetime import datetime
 
-class Kupac(db.Model):
-    __tablename__ = "kupci"
+class Customer(db.Model):
+    __tablename__ = "customers"
     id = db.Column(db.Integer, primary_key=True)
-    ime_prezime = db.Column(db.String(120), nullable=False)
-    adresa = db.Column(db.String(200), nullable=False)
-    mesto = db.Column(db.String(100), nullable=False)
-    zip = db.Column(db.String(10), nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    address = db.Column(db.String(200), nullable=False)
+    city = db.Column(db.String(100), nullable=False)
+    zip_code = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String(120), nullable=False)
-    način_preuzimanja = db.Column(db.String(20), nullable=False)  # na_adresi ili na_ulazu
-    uplatnice = db.relationship("Uplatnica", back_populates="kupac")
+    payment_slips = db.relationship("PaymentSlip", back_populates="customer")
 
-class Uplatnica(db.Model):
-    __tablename__ = "uplatnice"
+class PaymentSlip(db.Model):
+    __tablename__ = "payment_slips"
     id = db.Column(db.Integer, primary_key=True)
-    datum = db.Column(db.DateTime, default=datetime.utcnow)
-    ukupan_iznos = db.Column(db.Numeric(10, 2), nullable=False)
-    svrha_uplate = db.Column(db.String(100), default="Donacija za festival")
-    račun_primaoca = db.Column(db.String(50), default="155-0000000088961-71")
-    model = db.Column(db.String(10), default="97")
-    šifra_plaćanja = db.Column(db.String(20), default="189/289")
-    valuta = db.Column(db.String(5), default="RSD")
-    kupac_id = db.Column(db.Integer, db.ForeignKey("kupci.id"), nullable=False)
-    kupac = db.relationship("Kupac", back_populates="uplatnice")
-    stavke = db.relationship("StavkaKarte", back_populates="uplatnica", cascade="all, delete-orphan")
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    total_amount = db.Column(db.Numeric(10, 2), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"), nullable=False)
+    pickup_method = db.Column(db.String(20), nullable=False)  # on_delivery or at_entrance
+    is_paid = db.Column(db.Boolean, default=False)
+    customer = db.relationship("Customer", back_populates="payment_slips")
+    items = db.relationship("PaymentSlipItem", back_populates="payment_slip", cascade="all, delete-orphan")
+    payment_items = db.relationship("PaymentItem", back_populates="payment_slip", cascade="all, delete-orphan")
 
-class StavkaKarte(db.Model):
-    __tablename__ = "stavke_karata"
+class PaymentSlipItem(db.Model):
+    __tablename__ = "payment_slip_items"
     id = db.Column(db.Integer, primary_key=True)
-    naziv_karte = db.Column(db.String(20), nullable=False)  # npr. "karta_500", "karta_1000", "karta_2000"
-    količina = db.Column(db.Integer, nullable=False)
-    cena = db.Column(db.Numeric(10, 2), nullable=False)
-    uplatnica_id = db.Column(db.Integer, db.ForeignKey("uplatnice.id"), nullable=False)
-    uplatnica = db.relationship("Uplatnica", back_populates="stavke")
+    ticket_id = db.Column(db.Integer, db.ForeignKey("tickets.id"), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    payment_slip_id = db.Column(db.Integer, db.ForeignKey("payment_slips.id"), nullable=False)
+    payment_slip = db.relationship("PaymentSlip", back_populates="items")
+    ticket = db.relationship("Ticket")
+
+class Ticket(db.Model):
+    __tablename__ = "tickets"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+
+class Payment(db.Model):
+    __tablename__ = "payments"
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    statement_number = db.Column(db.String(50), nullable=False)
+    items = db.relationship("PaymentItem", back_populates="payment")
+
+class PaymentItem(db.Model):
+    __tablename__ = "payment_items"
+    id = db.Column(db.Integer, primary_key=True)
+    payment_id = db.Column(db.Integer, db.ForeignKey("payments.id"), nullable=False)
+    payment_slip_id = db.Column(db.Integer, db.ForeignKey("payment_slips.id"), nullable=False)
+    reference_number = db.Column(db.String(50), nullable=False)
+    amount = db.Column(db.Numeric(10, 2), nullable=False)
+    payment = db.relationship("Payment", back_populates="items")
+    payment_slip = db.relationship("PaymentSlip", back_populates="payment_items")

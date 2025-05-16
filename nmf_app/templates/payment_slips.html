@@ -1,0 +1,234 @@
+{% extends "layout.html" %}
+
+{% block title %}Natural Mystic Festival - Pregled uplatnica{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="section-title">Pregled uplatnica</h1>
+    <div class="reggae-stripes mb-4" style="width: 150px;"></div>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: var(--reggae-green);">
+                        <i class="fas fa-info-circle me-2"></i> Informacije
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="reggae-stripes mb-3" style="width: 80px;"></div>
+                            <h6 style="color: var(--reggae-green);">Ukupan broj uplatnica</h6>
+                            <p>Ukupan broj uplatnica: <strong>{{ payment_slips|length }}</strong></p>
+                            <p>Ukupan iznos: <strong>{{ "%.2f"|format(payment_slips|sum(attribute='total_amount')) }} RSD</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="reggae-stripes my-3" style="width: 80px;"></div>
+                            <h6 style="color: var(--reggae-green);">Uplaćene uplatnice</h6>
+                            <p>Broj uplaćenih: <strong>{{ payment_slips|selectattr('is_paid', 'eq', true)|list|length }}</strong></p>
+                            <p>Ukupan iznos uplaćenih: <strong>{{ "%.2f"|format(payment_slips|selectattr('is_paid', 'eq', true)|sum(attribute='total_amount')) }} RSD</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex justify-content-end">
+                <a href="{{ url_for('main.import_xml') }}" class="btn btn-reggae btn-reggae-yellow">
+                    <i class="fas fa-file-import me-2"></i> Učitavanje izvoda
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    {% if payment_slips %}
+    <div class="table-responsive">
+        <table class="table table-hover dt-responsive nowrap" id="payment-slips-table" style="width:100%">
+            <thead class="table-dark" style="background-color: var(--reggae-green) !important;">
+                <tr>
+                    <th>ID</th>
+                    <th>Datum</th>
+                    <th>Kupac</th>
+                    <th>Email</th>
+                    <th>Način preuzimanja</th>
+                    <th>Ukupan iznos</th>
+                    <th>Status</th>
+                    <th>Akcije</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slip in payment_slips %}
+                <tr>
+                    <td>{{ slip.id }}</td>
+                    <td>{{ slip.date.strftime('%d.%m.%Y. %H:%M') }}</td>
+                    <td>{{ slip.customer.name }}</td>
+                    <td>{{ slip.customer.email }}</td>
+                    <td>
+                        {% if slip.pickup_method == 'na_adresi' %}
+                            <span class="badge bg-info">Dostava na adresu</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Preuzimanje na ulazu</span>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ "%.2f"|format(slip.total_amount) }} RSD</strong></td>
+                    <td>
+                        {% if slip.is_paid %}
+                            <span class="badge bg-success">Plaćeno</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Nije plaćeno</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if slip.is_paid %}
+                            <a href="#" class="btn btn-sm btn-outline-success" title="Pošalji mejl o uspešnoj uplati">
+                                <i class="fas fa-envelope me-1"></i> Pošalji mejl
+                            </a>
+                        {% else %}
+                            <div class="d-flex align-items-center">
+                                <a href="{{ url_for('static', filename='payment_slips/uplatnica_' + '%07d'|format(slip.id) + '.pdf') }}" class="btn btn-sm btn-outline-warning" target="_blank" title="Otvori uplatnicu">
+                                    <i class="fas fa-file-invoice me-1"></i> Prikaži uplatnicu
+                                </a>
+                            </div>
+                        {% endif %}
+                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#detailsModal{{ slip.id }}">
+                            <i class="fas fa-eye me-1"></i> Detalji
+                        </button>
+                        <!-- Modal za detalje uplatnice -->
+                        <div class="modal fade" id="detailsModal{{ slip.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ slip.id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: var(--reggae-green); color: white;">
+                                        <h5 class="modal-title" id="detailsModalLabel{{ slip.id }}">
+                                            <i class="fas fa-ticket-alt me-2"></i> Detalji uplatnice #{{ slip.id }}
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="text-muted mb-3">Podaci o kupcu</h6>
+                                                <p><strong>Ime i prezime:</strong> {{ slip.customer.name }}</p>
+                                                <p><strong>Email:</strong> {{ slip.customer.email }}</p>
+                                                <p><strong>Adresa:</strong> {{ slip.customer.address }}</p>
+                                                <p><strong>Grad:</strong> {{ slip.customer.city }}, {{ slip.customer.zip_code }}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-muted mb-3">Podaci o uplatnici</h6>
+                                                <p><strong>Datum:</strong> {{ slip.date.strftime('%d.%m.%Y. %H:%M') }}</p>
+                                                <p><strong>Način preuzimanja:</strong> 
+                                                    {% if slip.pickup_method == 'na_adresi' %}
+                                                        Dostava na adresu
+                                                    {% else %}
+                                                        Preuzimanje na ulazu
+                                                    {% endif %}
+                                                </p>
+                                                <p><strong>Ukupan iznos:</strong> {{ "%.2f"|format(slip.total_amount) }} RSD</p>
+                                                <p><strong>Status plaćanja:</strong> 
+                                                    {% if slip.is_paid %}
+                                                        <span class="badge bg-success">Plaćeno</span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning text-dark">Nije plaćeno</span>
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="reggae-stripes my-3"></div>
+                                        
+                                        <h6 class="text-muted mb-3">Kupljene karte</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Naziv karte</th>
+                                                        <th>Količina</th>
+                                                        <th>Cena po komadu</th>
+                                                        <th>Ukupno</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for item in slip.items %}
+                                                    <tr>
+                                                        <td>{{ item.ticket.name }}</td>
+                                                        <td>{{ item.quantity }} kom</td>
+                                                        <td>{{ "%.2f"|format(item.ticket.price) }} RSD</td>
+                                                        <td><strong>{{ "%.2f"|format(item.quantity * item.ticket.price) }} RSD</strong></td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="table-light">
+                                                        <td colspan="3" class="text-end"><strong>Ukupno:</strong></td>
+                                                        <td><strong>{{ "%.2f"|format(slip.total_amount) }} RSD</strong></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-reggae" role="alert">
+        <i class="fas fa-info-circle me-2"></i> Trenutno nema uplatnica u sistemu.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Dodatni JavaScript za tabelu -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicijalizacija DataTables na srpskom jeziku
+        $('#payment-slips-table').DataTable({
+            responsive: true,
+            language: {
+                processing: "Obrada u toku...",
+                search: "Pretraga:",
+                lengthMenu: "Prikaži _MENU_ elemenata",
+                info: "Prikaz _START_ do _END_ od ukupno _TOTAL_ elemenata",
+                infoEmpty: "Prikaz 0 do 0 od ukupno 0 elemenata",
+                infoFiltered: "(filtrirano od ukupno _MAX_ elemenata)",
+                infoPostFix: "",
+                loadingRecords: "Učitavanje...",
+                zeroRecords: "Nije pronađen nijedan rezultat",
+                emptyTable: "Nema podataka u tabeli",
+                paginate: {
+                    first: "Početak",
+                    previous: "Prethodni",
+                    next: "Sledeći",
+                    last: "Kraj"
+                },
+                aria: {
+                    sortAscending: ": aktivirajte za rastući redosled",
+                    sortDescending: ": aktivirajte za opadajući redosled"
+                }
+            },
+            order: [[0, 'desc']], // Sortiranje po ID-u opadajuće
+            columnDefs: [
+                { responsivePriority: 1, targets: [0, 1, 2, 6, 7] }, // Prioritetne kolone
+                { orderable: false, targets: [7] } // Kolona Akcije nije sortabilna
+            ]
+        });
+    });
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Dodatna funkcionalnost za tabelu
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sortiranje tabele (može se dodati kasnije)
+        console.log('Tabela uplatnica je spremna za dodatne funkcionalnosti');
+    });
+</script>
+{% endblock %}

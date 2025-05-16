@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}Natural Mystic Festival - Učitavanje izvoda{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="section-title">Učitavanje izvoda</h1>
+    <div class="reggae-stripes mb-4" style="width: 150px;"></div>
+    
+    <!-- Navigacioni dugmići -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('main.payment_slips') }}" class="btn btn-reggae btn-reggae-green">
+                    <i class="fas fa-file-invoice me-2"></i> Pregled uplatnica
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Forma za učitavanje XML fajla -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title" style="color: var(--reggae-green);">
+                        <i class="fas fa-file-import me-2"></i> Učitavanje XML izvoda
+                    </h5>
+                    <div class="reggae-stripes mb-3" style="width: 80px;"></div>
+                    
+                    <form method="POST" enctype="multipart/form-data" action="{{ url_for('main.import_xml') }}">
+                        <div class="mb-4">
+                            <label for="xmlFile" class="form-label">Izaberite XML fajl izvoda</label>
+                            <input class="form-control" type="file" id="xmlFile" name="xmlFile" accept=".xml" required>
+                            <div class="form-text">Prihvataju se samo fajlovi sa .xml ekstenzijom.</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-reggae btn-reggae-green py-3">
+                                <i class="fas fa-upload me-2"></i> Učitaj izvod
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

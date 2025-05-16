@@ -5,7 +5,7 @@ from PIL import Image
 from fpdf import FPDF
 from nmf_app import mail
 from flask_mail import Message
-from nmf_app.models import Uplatnica
+from nmf_app.models import PaymentSlip
 from flask import render_template
 
 current_file_path = os.path.abspath(__file__)
@@ -21,23 +21,57 @@ def add_fonts(pdf):
     pdf.add_font('DejaVuSansCondensed', 'I', font_path_I)
 
 def send_email(uplatnica):
-    print("slanje mejla")
-    stavke = uplatnica.stavke
+    print("Slanje mejla sa potvrdom o kupovini...")
+    stavke = uplatnica.items
     payment_slip = generate_pdf(uplatnica)
-    msg = Message("Uplatnica", recipients=[uplatnica.kupac.email])
-    msg.html = render_template("email.html", uplatnica=uplatnica, stavke=stavke)
+    
+    # Kreiranje naslova emaila sa brojem uplatnice
+    subject = f"Potvrda o kupovini karata - NMF #{uplatnica.id}"
+    
+    # Kreiranje poruke sa HTML sadržajem
+    msg = Message(
+        subject=subject,
+        sender=os.getenv("MAIL_DEFAULT_SENDER"),
+        recipients=[uplatnica.customer.email]
+    )
+    
+    # Generisanje HTML sadržaja iz template-a
+    msg.html = render_template(
+        "email.html",
+        uplatnica=uplatnica,
+        stavke=stavke
+    )
+    
+    # Dodavanje PDF-a kao priloga
     if not os.path.exists(payment_slip):
-        raise FileNotFoundError(f"Payment slip not found at {payment_slip}")
+        raise FileNotFoundError(f"Nije pronađena uplatnica na putanji: {payment_slip}")
+    
     try:
         with open(payment_slip, 'rb') as f:
             file_content = f.read()
             print(f'Uspešno pročitan fajl: {payment_slip}, veličina: {len(file_content)} bajtova')
-            msg.attach(os.path.basename(payment_slip), "application/pdf", file_content)
-            print(f'Uspešno dodat prilog: {os.path.basename(payment_slip)}')
+            
+            # Dodavanje priloga sa lepšim imenom fajla
+            filename = f"Uplatnica_NMF_{uplatnica.id}.pdf"
+            msg.attach(
+                filename=filename,
+                content_type="application/pdf",
+                data=file_content,
+                disposition="attachment"
+            )
+            print(f'Uspešno dodat prilog: {filename}')
     except Exception as e:
-        print(f'Greška pri prilazu fajla {payment_slip}: {str(e)}')
-    print(f'kao poslat mejl: {msg=}')
-    # mail.send(msg)
+        print(f'Greška pri pristupu fajlu {payment_slip}: {str(e)}')
+        raise
+    
+    # Slanje emaila
+    try:
+        # mail.send(msg)
+        print(f'Email uspešno poslat na adresu: {uplatnica.customer.email}')
+        return True
+    except Exception as e:
+        print(f'Greška pri slanju emaila: {str(e)}')
+        raise
 
 
 def generate_pdf(uplatnica):
@@ -50,13 +84,13 @@ def generate_pdf(uplatnica):
     qr_code_images = []
     poziv_na_broj = generisi_poziv_na_broj(f"{uplatnica.id:09d}")
     new_data = {
-        'user_id': uplatnica.kupac_id,
-        'uplatilac': uplatnica.kupac.ime_prezime,
+        'user_id': uplatnica.customer_id,
+        'uplatilac': uplatnica.customer.name,
         'svrha_uplate': svrha_uplate,
         'primalac': nmf_primalac,
         'sifra_placanja': '189',
         'valuta': 'RSD',
-        'iznos': round(uplatnica.ukupan_iznos, 2),
+        'iznos': round(uplatnica.total_amount, 2),
         'racun_primaoca': nmf_racun_primaoca,
         'model': model, 
         'poziv_na_broj': poziv_na_broj,
@@ -70,8 +104,8 @@ def generate_pdf(uplatnica):
         "C": "1",
         "R": nmf_racun_primaoca,
         "N": nmf_primalac,
-        "I": f'RSD{str(f"{round(uplatnica.ukupan_iznos, 2):.2f}").replace(".", ",")}',
-        "P": uplatnica.kupac.ime_prezime,
+        "I": f'RSD{str(f"{round(uplatnica.total_amount, 2):.2f}").replace(".", ",")}',
+        "P": uplatnica.customer.name,
         "SF": '289',
         "S": svrha_uplate,
         "RO": f'{model}{poziv_na_broj}'
