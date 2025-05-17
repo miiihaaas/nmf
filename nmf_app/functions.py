@@ -31,7 +31,7 @@ def send_email(uplatnica):
     # Kreiranje poruke sa HTML sadržajem
     msg = Message(
         subject=subject,
-        sender=os.getenv("MAIL_DEFAULT_SENDER"),
+        sender=os.getenv("MAIL_USERNAME"),
         recipients=[uplatnica.customer.email]
     )
     
@@ -66,11 +66,17 @@ def send_email(uplatnica):
     
     # Slanje emaila
     try:
-        # mail.send(msg)
+        print(f"Pokušavam slanje mejla na: {uplatnica.customer.email}")
+        print(f"SMTP server: {os.getenv('MAIL_SERVER')}:{os.getenv('MAIL_PORT')}")
+        print(f"SSL: {os.getenv('MAIL_USE_SSL')}, TLS: {os.getenv('MAIL_USE_TLS')}")
+        mail.send(msg)
         print(f'Email uspešno poslat na adresu: {uplatnica.customer.email}')
         return True
     except Exception as e:
         print(f'Greška pri slanju emaila: {str(e)}')
+        # Detaljnije informacije o grešci
+        import traceback
+        print(traceback.format_exc())
         raise
 
 
