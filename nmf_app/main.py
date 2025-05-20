@@ -31,4 +31,8 @@ def edit_payment(payment_id):
     payment = Payment.query.get_or_404(payment_id)
     return render_template("edit_payment.html", payment=payment)
 
+@main.route("/order_ticket_form", methods=["GET", "POST"])
+def order_ticket_form():
+    return render_template("order_ticket_form.html")
+
 
