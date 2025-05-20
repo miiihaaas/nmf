@@ -87,7 +87,7 @@ def kreiraj_uplatnicu():
             total_amount=total_amount,
             customer=kupac,
             pickup_method=kupac_data["nacin_preuzimanja"],
-            is_paid=False
+            status="nije_placeno"
         )
         db.session.add(payment_slip)
         db.session.flush()  # Da bismo dobili ID uplatnice
