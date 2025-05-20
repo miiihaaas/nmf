@@ -9,6 +9,7 @@ class Customer(db.Model):
     city = db.Column(db.String(100), nullable=False)
     zip_code = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(20), nullable=True, default=None)
     payment_slips = db.relationship("PaymentSlip", back_populates="customer")
 
 class PaymentSlip(db.Model):
@@ -16,8 +17,9 @@ class PaymentSlip(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, default=datetime.utcnow)
     total_amount = db.Column(db.Numeric(10, 2), nullable=False)
+    amount_paid = db.Column(db.Numeric(10, 2), nullable=False, default=0)
     customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"), nullable=False)
-    pickup_method = db.Column(db.String(20), nullable=False)  # on_delivery or at_entrance
+    pickup_method = db.Column(db.String(20), nullable=False, default="na_ulazu")  #! na_adresi ili na_ulazu
     is_paid = db.Column(db.Boolean, default=False)
     customer = db.relationship("Customer", back_populates="payment_slips")
     items = db.relationship("PaymentSlipItem", back_populates="payment_slip", cascade="all, delete-orphan")

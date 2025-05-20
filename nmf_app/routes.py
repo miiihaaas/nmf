@@ -32,7 +32,8 @@ def kreiraj_uplatnicu():
         address=kupac_data["adresa"],
         zip_code=kupac_data["zip"],
         city=kupac_data["mesto"],
-        email=kupac_data["email"]
+        email=kupac_data["email"],
+        phone=kupac_data["telefon"] if kupac_data["telefon"] != "" else None
     )
 
     # Definišemo cene karata prema nazivu

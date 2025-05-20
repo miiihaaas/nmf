@@ -51,9 +51,8 @@
                     <th>ID</th>
                     <th>Datum</th>
                     <th>Kupac</th>
-                    <th>Email</th>
-                    <th>Način preuzimanja</th>
-                    <th>Ukupan iznos</th>
+                    <th>Preuzimanje</th>
+                    <th>Iznos za uplatu</th>
                     <th>Status</th>
                     <th>Akcije</th>
                 </tr>
@@ -62,38 +61,43 @@
                 {% for slip in payment_slips %}
                 <tr>
                     <td>{{ slip.id }}</td>
-                    <td>{{ slip.date.strftime('%d.%m.%Y. %H:%M') }}</td>
-                    <td>{{ slip.customer.name }}</td>
-                    <td>{{ slip.customer.email }}</td>
+                    <td>{{ slip.date.strftime('%d.%m.%Y.') }}</td>
+                    <td>
+                        <div><i class="fas fa-user me-1"></i> {{ slip.customer.name }}</div>
+                        <div><i class="fas fa-envelope me-1"></i> {{ slip.customer.email }}</div>
+                        {% if slip.customer.phone %}
+                        <div><i class="fas fa-phone me-1"></i> {{ slip.customer.phone }}</div>
+                        {% endif %}
+                    </td>
                     <td>
                         {% if slip.pickup_method == 'na_adresi' %}
-                            <span class="badge bg-info">Dostava na adresu</span>
+                            <i class="fas fa-truck me-1" title="Dostava na adresu"></i>
                         {% else %}
-                            <span class="badge bg-secondary">Preuzimanje na ulazu</span>
+                            <i class="fas fa-campground me-1" title="Preuzimanje na ulazu"></i>
                         {% endif %}
                     </td>
                     <td><strong>{{ "%.2f"|format(slip.total_amount) }} RSD</strong></td>
                     <td>
                         {% if slip.is_paid %}
-                            <span class="badge bg-success">Plaćeno</span>
+                            <i class="fas fa-check me-1" title="Plaćeno"></i>
                         {% else %}
-                            <span class="badge bg-warning text-dark">Nije plaćeno</span>
+                            <i class="fas fa-times me-1" title="Nije plaćeno"></i>
                         {% endif %}
                     </td>
                     <td>
                         {% if slip.is_paid %}
                             <a href="#" class="btn btn-sm btn-outline-success" title="Pošalji mejl o uspešnoj uplati">
-                                <i class="fas fa-envelope me-1"></i> Pošalji mejl
+                                <i class="fas fa-envelope me-1" title="Pošalji mejl"></i>
                             </a>
                         {% else %}
                             <div class="d-flex align-items-center">
                                 <a href="{{ url_for('static', filename='payment_slips/uplatnica_' + '%07d'|format(slip.id) + '.pdf') }}" class="btn btn-sm btn-outline-warning" target="_blank" title="Otvori uplatnicu">
-                                    <i class="fas fa-file-invoice me-1"></i> Prikaži uplatnicu
+                                    <i class="fas fa-file-invoice me-1" title="Prikaži uplatnicu"></i>
                                 </a>
                             </div>
                         {% endif %}
                         <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#detailsModal{{ slip.id }}">
-                            <i class="fas fa-eye me-1"></i> Detalji
+                            <i class="fas fa-eye me-1" title="Prikaži detalje"></i>
                         </button>
                         <!-- Modal za detalje uplatnice -->
                         <div class="modal fade" id="detailsModal{{ slip.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ slip.id }}" aria-hidden="true">
@@ -116,20 +120,20 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <h6 class="text-muted mb-3">Podaci o uplatnici</h6>
-                                                <p><strong>Datum:</strong> {{ slip.date.strftime('%d.%m.%Y. %H:%M') }}</p>
+                                                <p><strong>Datum:</strong> {{ slip.date.strftime('%d.%m.%Y.') }}</p>
                                                 <p><strong>Način preuzimanja:</strong> 
                                                     {% if slip.pickup_method == 'na_adresi' %}
-                                                        Dostava na adresu
+                                                        <i class="fas fa-truck me-1" title="Dostava na adresu"></i>
                                                     {% else %}
-                                                        Preuzimanje na ulazu
+                                                        <i class="fas fa-campground me-1" title="Preuzimanje na ulazu"></i>
                                                     {% endif %}
                                                 </p>
                                                 <p><strong>Ukupan iznos:</strong> {{ "%.2f"|format(slip.total_amount) }} RSD</p>
                                                 <p><strong>Status plaćanja:</strong> 
                                                     {% if slip.is_paid %}
-                                                        <span class="badge bg-success">Plaćeno</span>
+                                                        <i class="fas fa-check me-1" title="Plaćeno"></i>
                                                     {% else %}
-                                                        <span class="badge bg-warning text-dark">Nije plaćeno</span>
+                                                        <i class="fas fa-times me-1" title="Nije plaćeno"></i>
                                                     {% endif %}
                                                 </p>
                                             </div>
@@ -217,8 +221,8 @@
             },
             order: [[0, 'desc']], // Sortiranje po ID-u opadajuće
             columnDefs: [
-                { responsivePriority: 1, targets: [0, 1, 2, 6, 7] }, // Prioritetne kolone
-                { orderable: false, targets: [7] } // Kolona Akcije nije sortabilna
+                { responsivePriority: 1, targets: [0, 1, 2, 6] }, // Prioritetne kolone
+                { orderable: false, targets: [6] } // Kolona Akcije nije sortabilna
             ]
         });
     });
