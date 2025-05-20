@@ -3,6 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_mail import Mail
+from flask_cors import CORS
 from dotenv import load_dotenv
 
 
@@ -18,7 +19,8 @@ mail = Mail()
 
 def create_app():
     app = Flask(__name__)
-
+    CORS(app)
+    
     # Konfiguracija iz .env
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
@@ -38,7 +40,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
-
+    
     # Registracija blueprint-ova
     from .main import main as main_blueprint
     from nmf_app.routes import api as api_blueprint
