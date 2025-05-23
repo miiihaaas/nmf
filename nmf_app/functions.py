@@ -33,7 +33,7 @@ def send_email(uplatnica):
         subject=subject,
         sender=os.getenv("MAIL_USERNAME"),
         recipients=[uplatnica.customer.email],
-        bcc=os.getenv("MAIL_ADMIN")
+        bcc=[os.getenv("MAIL_ADMIN")]
     )
     
     # Generisanje HTML sadržaja iz template-a
