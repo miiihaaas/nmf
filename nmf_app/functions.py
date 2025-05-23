@@ -26,7 +26,7 @@ def send_email(uplatnica):
     payment_slip = generate_pdf(uplatnica)
     
     # Kreiranje naslova emaila sa brojem uplatnice
-    subject = f"Potvrda o kupovini karata - NMF #{uplatnica.id}"
+    subject = f"Potvrda o kupovini donatorskih karata - NMF #{uplatnica.id}"
     
     # Kreiranje poruke sa HTML sadržajem
     msg = Message(
@@ -90,9 +90,10 @@ def generate_pdf(uplatnica):
     data_list = []
     qr_code_images = []
     poziv_na_broj = generisi_poziv_na_broj(f"{uplatnica.id:09d}")
+    uplatilac = f"{uplatnica.customer.name}\n{uplatnica.customer.address}\n{uplatnica.customer.zip_code} {uplatnica.customer.city}"
     new_data = {
         'user_id': uplatnica.customer_id,
-        'uplatilac': uplatnica.customer.name,
+        'uplatilac': uplatilac,
         'svrha_uplate': svrha_uplate,
         'primalac': nmf_primalac,
         'sifra_placanja': '189',
@@ -112,7 +113,7 @@ def generate_pdf(uplatnica):
         "R": nmf_racun_primaoca,
         "N": nmf_primalac,
         "I": f'RSD{str(f"{round(uplatnica.total_amount, 2):.2f}").replace(".", ",")}',
-        "P": uplatnica.customer.name,
+        "P": uplatilac[:70],
         "SF": '289',
         "S": svrha_uplate,
         "RO": f'{model}{poziv_na_broj}'

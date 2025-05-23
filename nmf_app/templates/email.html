@@ -172,7 +172,7 @@
 <body>
     <div class="header">
         <h1>Natural Mystic Festival</h1>
-        <p>Potvrda o kupovini karata #{{ uplatnica.id }}</p>
+        <p>Potvrda o kupovini donatorskih karata #{{ uplatnica.id }}</p>
     </div>
     
     <div class="reggae-stripes"></div>
@@ -203,7 +203,13 @@
             <tbody>
                 {% for stavka in stavke %}
                 <tr>
-                    <td>{{ stavka.ticket.name }}</td>
+                    {% if stavka.ticket.name == 'karta_500' %}
+                        <td>DK500</td>
+                    {% elif stavka.ticket.name == 'karta_1000' %}
+                        <td>DK1000</td>
+                    {% elif stavka.ticket.name == 'karta_2000' %}
+                        <td>DK2000</td>
+                    {% endif %}
                     <td>{{ stavka.quantity }} kom</td>
                     <td>{{ "%.2f"|format(stavka.ticket.price) }} RSD</td>
                     <td><strong>{{ "%.2f"|format(stavka.quantity * stavka.ticket.price) }} RSD</strong></td>
@@ -213,7 +219,7 @@
         </table>
 
         <div class="total-amount">
-            Ukupan iznos za naplatu: <span style="color: #fdd216; font-size: 1.1em;">{{ "%.2f"|format(uplatnica.total_amount) }} RSD</span>
+            Ukupan iznos za uplatu: <span style="color: #fdd216; font-size: 1.1em;">{{ "%.2f"|format(uplatnica.total_amount) }} RSD</span>
         </div>
     </div>
     
@@ -221,7 +227,7 @@
 
     <div class="footer">
         <p>Hvala Vam što kupujete donatorske karte za <strong>Natural Mystic Festival</strong>! ❤️</p>
-        <p>U slučaju pitanja, možete nas kontaktirati putem email adrese: <a href="mailto:office@naturalmystic.info">office@naturalmystic.info</a></p>
+        <p>Za dodatna pitanja, možete nas kontaktirati putem email adrese: <a href="mailto:office@naturalmystic.info">office@naturalmystic.info</a></p>
         <div class="reggae-stripes" style="margin-top: 15px;"></div>
     </div>
 </body>

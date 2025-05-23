@@ -28,10 +28,10 @@ def kreiraj_uplatnicu():
 
     # Kreiraj kupca
     kupac = Customer(
-        name=kupac_data["ime_prezime"],
-        address=kupac_data["adresa"],
+        name=kupac_data["ime_prezime"].title(),
+        address=kupac_data["adresa"].title(),
         zip_code=kupac_data["zip"],
-        city=kupac_data["mesto"],
+        city=kupac_data["mesto"].title(),
         email=kupac_data["email"],
         phone=kupac_data["telefon"] if kupac_data["telefon"] != "" else None
     )
