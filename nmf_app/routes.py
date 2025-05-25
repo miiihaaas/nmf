@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from nmf_app import db
 from nmf_app.models import Customer, PaymentSlip, PaymentSlipItem, Ticket
 from sqlalchemy.exc import SQLAlchemyError
-from nmf_app.functions import send_email
+from nmf_app.functions import send_email, sanitize_string
 
 api = Blueprint("api", __name__)
 
@@ -28,10 +28,10 @@ def kreiraj_uplatnicu():
 
     # Kreiraj kupca
     kupac = Customer(
-        name=kupac_data["ime_prezime"].title(),
-        address=kupac_data["adresa"].title(),
+        name=sanitize_string(kupac_data["ime_prezime"].title()),
+        address=sanitize_string(kupac_data["adresa"].title()),
         zip_code=kupac_data["zip"],
-        city=kupac_data["mesto"].title(),
+        city=sanitize_string(kupac_data["mesto"].title()),
         email=kupac_data["email"],
         phone=kupac_data["telefon"] if kupac_data["telefon"] != "" else None
     )

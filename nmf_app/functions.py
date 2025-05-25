@@ -15,10 +15,21 @@ font_path = os.path.join(project_folder, 'static', 'fonts', 'DejaVuSansCondensed
 font_path_B = os.path.join(project_folder, 'static', 'fonts', 'DejaVuSansCondensed-Bold.ttf')
 font_path_I = os.path.join(project_folder, 'static', 'fonts', 'DejaVuSansCondensed-Oblique.ttf')
 
+
+def sanitize_string(text):
+    '''
+    Zamenjuje backslash sa forward slash
+    '''
+    text = text.replace('\\', '/')
+    text = text.strip()
+    return text
+
+
 def add_fonts(pdf):
     pdf.add_font('DejaVuSansCondensed', '', font_path)
     pdf.add_font('DejaVuSansCondensed', 'B', font_path_B)
     pdf.add_font('DejaVuSansCondensed', 'I', font_path_I)
+
 
 def send_email(uplatnica):
     print("Slanje mejla sa potvrdom o kupovini...")
