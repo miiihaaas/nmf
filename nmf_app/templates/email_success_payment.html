@@ -177,6 +177,11 @@
     
     <div class="reggae-stripes"></div>
 
+    <div style="background-color: #fffbe6; border-left: 5px solid #006b3c; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 20px; margin-bottom: 20px;">
+        <h2 style="color: #006b3c; margin-top: 0;">Hvala Vam na donaciji!</h2>
+        <p style="font-size: 1.15em; color: #333; margin-bottom: 0;">Vaša donacija je uspešno evidentirana i potvrđena. Sredstva će biti iskorišćena za realizaciju <strong>Natural Mystic Festival</strong>-a. Još jednom, veliko hvala na Vašoj podršci!</p>
+    </div>
+
     <div class="customer-info">
         <h2>Podaci o donatoru</h2>
         <p><strong>Ime i prezime:</strong> {{ uplatnica.customer.name }}</p>
@@ -219,15 +224,16 @@
         </table>
 
         <div class="total-amount">
-            Ukupan iznos za uplatu: <span style="color: #fdd216; font-size: 1.1em;">{{ "%.2f"|format(uplatnica.total_amount) }} RSD</span>
+            Ukupano donirano: <span style="color: #fdd216; font-size: 1.1em;">{{ "%.2f"|format(uplatnica.total_amount) }} RSD</span>
         </div>
     </div>
     
     <div class="reggae-stripes"></div>
 
     <div class="footer">
-        <p>Hvala Vam što kupujete donatorske karte za <strong>Natural Mystic Festival</strong>! ❤️</p>
-        <p>Za dodatna pitanja, možete nas kontaktirati putem email adrese: <a href="mailto:office@naturalmystic.info">office@naturalmystic.info</a></p>
+        <p><strong>Vaša donacija je evidentirana.</strong></p>
+        <p>Hvala Vam još jednom na ukazanom poverenju i podršci!</p>
+        <p>Za sva dodatna pitanja, možete nas kontaktirati putem email adrese: <a href="mailto:office@naturalmystic.info">office@naturalmystic.info</a></p>
         <div class="reggae-stripes" style="margin-top: 15px;"></div>
     </div>
 </body>

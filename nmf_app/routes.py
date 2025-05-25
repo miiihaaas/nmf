@@ -1,8 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect, url_for, flash
 from nmf_app import db
 from nmf_app.models import Customer, PaymentSlip, PaymentSlipItem, Ticket
 from sqlalchemy.exc import SQLAlchemyError
-from nmf_app.functions import send_email, sanitize_string
+from nmf_app.functions import send_email, sanitize_string, send_email_success_payment
 
 api = Blueprint("api", __name__)
 
@@ -120,3 +120,23 @@ def kreiraj_uplatnicu():
             "status": "error", 
             "poruka": "Došlo je do greške pri čuvanju podataka. Pokušajte ponovo kasnije."
         }), 500
+
+
+@api.route("/api/uplatnice/posalji_mejl/<int:uplatnica_id>", methods=["POST", "GET"])
+def posalji_mejl_o_uspesnoj_uplati(uplatnica_id):
+    if not uplatnica_id:
+        return jsonify({"status": "error", "poruka": "Nedostaje ID uplatnice."}), 400
+    
+    payment_slip = PaymentSlip.query.get(uplatnica_id)
+    if not payment_slip:
+        return jsonify({"status": "error", "poruka": "Uplatnica nije pronađena."}), 404
+    
+    if send_email_success_payment(payment_slip):
+        payment_slip.status = "placeno_poslat_mejl"
+        db.session.commit()
+        flash("Mejl je uspešno poslat.", "success")
+        return redirect(url_for('main.payment_slips'))
+    else:
+        flash("Došlo je do greške pri slanju mejla.", "danger")
+        return redirect(url_for('main.payment_slips'))
+    

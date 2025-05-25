@@ -21,7 +21,7 @@ class PaymentSlip(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"), nullable=False)
     pickup_method = db.Column(db.String(20), nullable=False, default="na_ulazu")  #! na_adresi ili na_ulazu
     # is_paid = db.Column(db.Boolean, default=False)
-    status = db.Column(db.String(20), nullable=False, default="nije_placeno") #! nije_plaćeno, delimicno_plaćeno, plaćeno, poslat mejl da je plaćeno
+    status = db.Column(db.String(20), nullable=False, default="nije_placeno") #! nije_placeno, delimicno_placeno, placeno, placeno_poslat_mejl
     customer = db.relationship("Customer", back_populates="payment_slips")
     items = db.relationship("PaymentSlipItem", back_populates="payment_slip", cascade="all, delete-orphan")
     payment_items = db.relationship("PaymentItem", back_populates="payment_slip", cascade="all, delete-orphan")

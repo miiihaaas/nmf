@@ -32,7 +32,7 @@ def add_fonts(pdf):
 
 
 def send_email(uplatnica):
-    print("Slanje mejla sa potvrdom o kupovini...")
+    print("Slanje mejla sa potvrdom da je uspeno generisanja uplatnica za donaciju...")
     stavke = uplatnica.items
     payment_slip = generate_pdf(uplatnica)
     
@@ -319,3 +319,41 @@ def generisi_poziv_na_broj(osnovni_broj):
     ctr = str(kontrola).zfill(2)
     # 6. Kreiraj konačni poziv na broj
     return ctr + osnovni_broj
+
+
+def send_email_success_payment(payment_slip):
+    print("Slanje mejla sa potvrdom da je uspeno uplaćena donacija...")
+    stavke = payment_slip.items
+    
+    # Kreiranje naslova emaila sa brojem uplatnice
+    subject = f"Potvrda uplate donatorskih karata - NMF #{payment_slip.id}"
+    
+    # Kreiranje poruke sa HTML sadržajem
+    msg = Message(
+        subject=subject,
+        sender=os.getenv("MAIL_USERNAME"),
+        recipients=[payment_slip.customer.email],
+        bcc=[os.getenv("MAIL_ADMIN")]
+    )
+    
+    # Generisanje HTML sadržaja iz template-a
+    msg.html = render_template(
+        "email_success_payment.html",
+        uplatnica=payment_slip,
+        stavke=stavke
+    )
+    # Slanje emaila
+    try:
+        print(f"Pokušavam slanje mejla na: {payment_slip.customer.email}")
+        print(f"SMTP server: {os.getenv('MAIL_SERVER')}:{os.getenv('MAIL_PORT')}")
+        print(f"SSL: {os.getenv('MAIL_USE_SSL')}, TLS: {os.getenv('MAIL_USE_TLS')}")
+        mail.send(msg)
+        print(f'Email uspešno poslat na adresu: {payment_slip.customer.email}')
+        return True
+    except Exception as e:
+        print(f'Greška pri slanju emaila: {str(e)}')
+        # Detaljnije informacije o grešci
+        import traceback
+        print(traceback.format_exc())
+        raise
+    pass

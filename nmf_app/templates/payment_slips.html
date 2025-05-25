@@ -83,17 +83,18 @@
                     <td class="text-center">
                         {% if slip.status == 'placeno' %}
                             <i class="fas fa-piggy-bank fa-lg" style="color: var(--reggae-green);" title="Plaćeno"></i>
+                        {% elif slip.status == 'placeno_poslat_mejl' %}
+                            <i class="fas fa-piggy-bank fa-lg" style="color: var(--reggae-green);" title="Plaćeno"></i>
+                            <i class="fas fa-envelope fa-lg" style="color: var(--reggae-green);" title="Poslat mejl"></i>
                         {% elif slip.status == 'delimicno_placeno' %}
                             <i class="fas fa-piggy-bank fa-lg" style="color: var(--reggae-yellow);" title="Delimično plaćeno"></i>
                         {% elif slip.status == 'nije_placeno' %}
                             <i class="fas fa-piggy-bank fa-lg" style="color: var(--reggae-red);" title="Nije plaćeno"></i>
-                        {% elif slip.status == 'poslat_mejl' %}
-                            <i class="fas fa-envelope fa-lg" style="color: var(--reggae-green);" title="Poslat mejl"></i>
                         {% endif %}
                     </td>
                     <td>
                         {% if slip.status == 'placeno' %}
-                            <a href="#" class="btn btn-sm btn-outline-success" title="Pošalji mejl o uspešnoj uplati">
+                            <a href="{{ url_for('api.posalji_mejl_o_uspesnoj_uplati', uplatnica_id=slip.id) }}" class="btn btn-sm btn-outline-success" title="Pošalji mejl o uspešnoj uplati">
                                 <i class="fas fa-envelope me-1" title="Pošalji mejl"></i>
                             </a>
                         {% else %}
@@ -144,8 +145,8 @@
                                                         <i class="fas fa-piggy-bank fa-lg" style="color: var(--reggae-yellow);" title="Delimično plaćeno"></i> Delimično plaćeno
                                                     {% elif slip.status == 'nije_placeno' %}
                                                         <i class="fas fa-piggy-bank fa-lg" style="color: var(--reggae-red);" title="Nije plaćeno"></i> Nije plaćeno
-                                                    {% elif slip.status == 'poslat_mejl' %}
-                                                        <i class="fas fa-envelope fa-lg" style="color: var(--reggae-green);" title="Poslat mejl"></i> Poslat mejl
+                                                    {% elif slip.status == 'placeno_poslat_mejl' %}
+                                                        <i class="fas fa-piggy-bank fa-lg" style="color: var(--reggae-green);" title="Plaćeno"></i> <i class="fas fa-envelope fa-lg" style="color: var(--reggae-green);" title="Poslat mejl"></i> Plaćeno, poslat mejl
                                                     {% endif %}
                                                 </p>
                                             </div>
