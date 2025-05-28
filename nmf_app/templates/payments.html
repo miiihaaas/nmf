@@ -60,6 +60,8 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Datum</th>
+                <th scope="col">Broj uplatnica</th>
+                <th scope="col">Ukupan iznos</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -67,7 +69,9 @@
             {% for payment in payments %}
             <tr>
                 <th scope="row">{{ payment.statement_number }}</th>
-                <td>{{ payment.date.strftime('%d.%m.%Y') }}</td>
+                <td>{{ payment.date.strftime('%d.%m.%Y.') }}</td>
+                <td>{{ payment.items|length }}</td>
+                <td>{{ "%.2f"|format(payment.items|sum(attribute='amount')) }} RSD</td>
                 <td>
                     <a href="{{ url_for('main.view_payment', payment_id=payment.id) }}" class="btn btn-reggae btn-reggae-green">
                         <i class="fas fa-eye me-2"></i> Pregled
