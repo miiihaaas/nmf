@@ -15,8 +15,10 @@ def home():
 
 @main.route("/payment_slips", methods=["GET", "POST"])
 def payment_slips():
+    from datetime import datetime
     payment_slips = PaymentSlip.query.all()
-    return render_template("payment_slips.html", payment_slips=payment_slips)
+    now = datetime.now()  # Koristimo datetime.datetime umesto datetime.date
+    return render_template("payment_slips.html", payment_slips=payment_slips, now=now)
 
 @main.route("/payments", methods=["GET", "POST"])
 def payments():

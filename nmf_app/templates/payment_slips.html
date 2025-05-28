@@ -10,7 +10,7 @@
     <div class="row mb-4">
         <div class="col-md-8">
             <div class="card border-0 shadow-sm">
-                <div class="card-body">
+                <div class="card-body" style="background-color: #006b3d5b;">
                     <h5 class="card-title" style="color: var(--reggae-green);">
                         <i class="fas fa-info-circle me-2"></i> Informacije
                     </h5>
@@ -61,7 +61,14 @@
                 {% for slip in payment_slips %}
                 <tr>
                     <td>{{ slip.id }}</td>
-                    <td>{{ slip.date.strftime('%d.%m.%Y.') }}</td>
+                    <td>
+                        {{ slip.date.strftime('%d.%m.%Y.') }}
+                        {% if slip.status == 'nije_placeno' %}
+                        <div class="small text-muted mt-1">
+                            <i class="fas fa-clock me-1"></i> Pre {% set days = (now - slip.date).days %}{{ days }} {% if days % 10 == 1 and days % 100 != 11 %}dan{% else %}dana{% endif %}
+                        </div>
+                        {% endif %}
+                    </td>
                     <td>
                         <div><i class="fas fa-user me-1"></i> {{ slip.customer.name }}</div>
                         <div><i class="fas fa-envelope me-1"></i> {{ slip.customer.email }}</div>
