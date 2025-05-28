@@ -356,4 +356,3 @@ def send_email_success_payment(payment_slip):
         import traceback
         print(traceback.format_exc())
         raise
-    pass

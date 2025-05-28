@@ -24,8 +24,8 @@
                         <div class="col-md-6">
                             <div class="reggae-stripes my-3" style="width: 80px;"></div>
                             <h6 style="color: var(--reggae-green);">Uplaćene uplatnice</h6>
-                            <p>Broj uplaćenih: <strong>{{ payment_slips|selectattr('status', 'eq', 'placeno')|list|length }}</strong></p>
-                            <p>Ukupan iznos uplaćenih: <strong>{{ "%.2f"|format(payment_slips|selectattr('status', 'eq', 'placeno')|sum(attribute='total_amount')) }} RSD</strong></p>
+                            <p>Broj uplaćenih: <strong>{{ payment_slips|selectattr('status', 'in', ['placeno', 'placeno_poslat_mejl'])|list|length }}</strong></p>
+                            <p>Ukupan iznos uplaćenih: <strong>{{ "%.2f"|format(payment_slips|selectattr('status', 'in', ['placeno', 'placeno_poslat_mejl'])|sum(attribute='total_amount')) }} RSD</strong></p>
                         </div>
                     </div>
                 </div>
