@@ -231,15 +231,13 @@ def send_payment_reminder(slip_id):
         recipient_name = payment_slip.customer.name
         
         msg = Message(
-            "Natural Mystic Festival - Podsetnik za uplatu",
+            subject="🌞 Hej, tvoja karta za Natural Mystic još uvek čeka :)",
             sender=("Natural Mystic Festival", "info@naturalmysticfestival.rs"),
             recipients=[recipient_email]
         )
         
-        # Tekst mejla
-        msg.body = f"""🌞 Hej, tvoja karta za Natural Mystic još uvek čeka :)
-
-Pozdrav  💚💛❤️
+        # Tekst mejla u plain text formatu za klijente koji ne podržavaju HTML
+        msg.body = f"""Pozdrav {payment_slip.customer.name} 💚💛❤️
 
 Vidimo da je popunjena prijava za donatorsku kartu za Natural Mystic Festival – hvala na podršci! 🙌 Mali podsetnik da uplata još nije stigla, pa rezervacija nije kompletirana.
 
@@ -250,6 +248,15 @@ Ako je uplata već rešena – sve super, ovaj mejl može da se zanemari. 😊
 Hvala još jednom – i nadamo se da se vidimo uskoro pod vedrim nebom! 🎶
 
 One love 💚💛❤️"""
+        
+        # HTML verzija mejla
+        msg.html = render_template('email_payment_reminder.html', uplatnica=payment_slip)
+        
+        # Prilažemo PDF uplatnicu
+        pdf_path = os.path.join(current_app.root_path, "static", "payment_slips", f"uplatnica_{slip_id:07d}.pdf")
+        if os.path.exists(pdf_path):
+            with open(pdf_path, "rb") as pdf_file:
+                msg.attach(f"uplatnica_{slip_id}.pdf", "application/pdf", pdf_file.read())
         
         mail.send(msg)
         
