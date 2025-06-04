@@ -168,11 +168,11 @@
         
         <p>Vidimo da je popunjena prijava za donatorsku kartu za Natural Mystic Festival - hvala na podršci! 🙌 Mali podsetnik da uplata još nije stigla, pa rezervacija nije kompletirana.</p>
         
-        <p>Dovoljno je da se uplata realizuje po instrukcijama iz mejla koji je stigao.</p>
+        <p>Dovoljno je da se uplata realizuje po instrukcijama iz uplatnice koja je u prilogu mejla.</p>
         
-        <p>Ako je uplata već rešena - sve super, ovaj mejl može da se zanemari. 😊</p>
+        <p>Ako je uplata već rešena - sve super, ovaj mejl možeš da zanemariš. 😊</p>
         
-        <p>Hvala još jednom - i nadamo se da se vidimo uskoro pod vedrim nebom! 🎶</p>
+        <p>Hvala još jednom i nadamo se da se vidimo uskoro pod vedrim nebom! 🎶</p>
         
         <p>One love 💚💛❤️</p>
     </div>
@@ -185,12 +185,6 @@
         <p><strong>Datum rezervacije:</strong> {{ uplatnica.date.strftime('%d.%m.%Y.') }}</p>
         <p><strong>Iznos za uplatu:</strong> {{ "%.2f"|format(uplatnica.total_amount) }} RSD</p>
         <p><strong>Način preuzimanja:</strong> {{ 'Dostava na kućnu adresu' if uplatnica.pickup_method == 'na_adresi' else 'Lično preuzimanje na ulazu' }}</p>
-    </div>
-    
-    <div class="action-box">
-        <h2>Uplatnica je priložena</h2>
-        <p>Za vašu pogodnost, uplatnicu smo priložili uz ovaj mejl.</p>
-        <p>Ako imate bilo kakvih pitanja, slobodno nas kontaktirajte na office@naturalmystic.info.</p>
     </div>
     
     <div class="footer">
