@@ -1,8 +1,11 @@
 import xml.etree.ElementTree as ET
 import decimal
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from nmf_app.models import PaymentSlip, Payment, PaymentItem
-from nmf_app import db
+import os
+from datetime import datetime
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from nmf_app.models import PaymentSlip, Payment, PaymentItem, Customer
+from nmf_app import db, mail
+from flask_mail import Message
 
 
 
@@ -15,9 +18,8 @@ def home():
 
 @main.route("/payment_slips", methods=["GET", "POST"])
 def payment_slips():
-    from datetime import datetime
     payment_slips = PaymentSlip.query.all()
-    now = datetime.now()  # Koristimo datetime.datetime umesto datetime.date
+    now = datetime.now()
     return render_template("payment_slips.html", payment_slips=payment_slips, now=now)
 
 @main.route("/payments", methods=["GET", "POST"])
@@ -127,5 +129,134 @@ def view_payment(payment_id):
 @main.route("/order_ticket_form", methods=["GET", "POST"])
 def order_ticket_form():
     return render_template("order_ticket_form.html")
+
+
+@main.route("/manual_payment/<int:slip_id>", methods=["POST"])
+def manual_payment(slip_id):
+    payment_slip = PaymentSlip.query.get_or_404(slip_id)
+    
+    # Proveravamo da li je uplatnica već plaćena
+    if payment_slip.status != "nije_placeno":
+        flash("Ova uplatnica već ima evidentirano plaćanje.", "warning")
+        return redirect(url_for("main.payment_slips"))
+    
+    try:
+        amount = decimal.Decimal(request.form.get("amount", 0))
+        note = request.form.get("note", "")
+        
+        if amount <= 0 or amount > payment_slip.total_amount:
+            flash("Unet je neispravan iznos uplate.", "danger")
+            return redirect(url_for("main.payment_slips"))
+        
+        # Kreiramo ručnu uplatu
+        payment = Payment(
+            date=datetime.now().strftime("%Y-%m-%d"),
+            statement_number=f"RUČNO-{slip_id}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        )
+        db.session.add(payment)
+        db.session.flush()
+        
+        # Kreiramo stavku uplate
+        payment_item = PaymentItem(
+            payment_id=payment.id,
+            payment_slip_id=slip_id,
+            reference_number=f"00{slip_id}",
+            amount=amount,
+            note=f"Ručna uplata: {note}"
+        )
+        db.session.add(payment_item)
+        
+        # Ažuriramo status uplatnice
+        payment_slip.amount_paid += amount
+        if payment_slip.amount_paid >= payment_slip.total_amount:
+            payment_slip.status = "placeno"
+        elif payment_slip.amount_paid >= 500.00:
+            payment_slip.status = "delimicno_placeno"
+        
+        db.session.commit()
+        flash(f"Uspešno je proknjižena ručna uplata od {amount:.2f} RSD za uplatnicu #{slip_id}.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Došlo je do greške prilikom evidentiranja ručne uplate: {str(e)}", "danger")
+    
+    return redirect(url_for("main.payment_slips"))
+
+
+@main.route("/delete_payment_slip/<int:slip_id>")
+def delete_payment_slip(slip_id):
+    payment_slip = PaymentSlip.query.get_or_404(slip_id)
+    
+    # Proveravamo da li je uplatnica već plaćena
+    if payment_slip.status != "nije_placeno":
+        flash("Nije moguće obrisati uplatnicu koja je već plaćena.", "danger")
+        return redirect(url_for("main.payment_slips"))
+    
+    try:
+        # Brišemo PDF fajl ako postoji
+        pdf_path = os.path.join(current_app.root_path, "static", "payment_slips", f"uplatnica_{slip_id:07d}.pdf")
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+        
+        # Čuvamo informacije za poruku
+        customer_name = payment_slip.customer.name
+        
+        # Brišemo sve stavke uplatnice
+        for item in payment_slip.items:
+            db.session.delete(item)
+        
+        # Brišemo uplatnicu
+        db.session.delete(payment_slip)
+        db.session.commit()
+        
+        flash(f"Uspešno ste obrisali uplatnicu za kupca {customer_name}.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Došlo je do greške prilikom brisanja uplatnice: {str(e)}", "danger")
+    
+    return redirect(url_for("main.payment_slips"))
+
+
+@main.route("/send_payment_reminder/<int:slip_id>")
+def send_payment_reminder(slip_id):
+    payment_slip = PaymentSlip.query.get_or_404(slip_id)
+    
+    # Proveravamo da li je uplatnica već plaćena
+    if payment_slip.status != "nije_placeno":
+        flash("Nije potrebno slati podsetnik za uplatnicu koja je već plaćena.", "warning")
+        return redirect(url_for("main.payment_slips"))
+    
+    try:
+        # Šaljemo mejl korisniku
+        recipient_email = payment_slip.customer.email
+        recipient_name = payment_slip.customer.name
+        
+        msg = Message(
+            "Natural Mystic Festival - Podsetnik za uplatu",
+            sender=("Natural Mystic Festival", "info@naturalmysticfestival.rs"),
+            recipients=[recipient_email]
+        )
+        
+        # Tekst mejla
+        msg.body = f"""🌞 Hej, tvoja karta za Natural Mystic još uvek čeka :)
+
+Pozdrav  💚💛❤️
+
+Vidimo da je popunjena prijava za donatorsku kartu za Natural Mystic Festival – hvala na podršci! 🙌 Mali podsetnik da uplata još nije stigla, pa rezervacija nije kompletirana.
+
+Dovoljno je da se uplata realizuje po instrukcijama iz mejla koji je stigao. Ako uplatnica treba ponovo – tu smo, samo javi.
+
+Ako je uplata već rešena – sve super, ovaj mejl može da se zanemari. 😊
+
+Hvala još jednom – i nadamo se da se vidimo uskoro pod vedrim nebom! 🎶
+
+One love 💚💛❤️"""
+        
+        mail.send(msg)
+        
+        flash(f"Uspešno ste poslali podsetnik za uplatu na e-mail adresu {recipient_email}.", "success")
+    except Exception as e:
+        flash(f"Došlo je do greške prilikom slanja podsetnika: {str(e)}", "danger")
+    
+    return redirect(url_for("main.payment_slips"))
 
 

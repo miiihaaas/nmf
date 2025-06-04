@@ -110,6 +110,20 @@
                                     <i class="fas fa-file-invoice me-1" title="Prikaži uplatnicu"></i>
                                 </a>
                             </div>
+                            
+                            {% if slip.status == 'nije_placeno' %}
+                            <div class="mt-1 d-flex gap-1">
+                                <button type="button" class="btn btn-sm" style="background-color: var(--reggae-green); color: white;" data-bs-toggle="modal" data-bs-target="#manualPaymentModal{{ slip.id }}" title="Ručno rasknjižavanje uplate">
+                                    <i class="fas fa-hand-holding-usd me-1"></i>
+                                </button>
+                                <a href="{{ url_for('main.send_payment_reminder', slip_id=slip.id) }}" class="btn btn-sm" style="background-color: var(--reggae-yellow); color: var(--reggae-black);" title="Pošalji podsetnik za uplatu">
+                                    <i class="fas fa-bell me-1"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm" style="background-color: var(--reggae-red); color: white;" data-bs-toggle="modal" data-bs-target="#deleteModal{{ slip.id }}" title="Obriši stavku">
+                                    <i class="fas fa-trash me-1"></i>
+                                </button>
+                            </div>
+                            {% endif %}
                         {% endif %}
                         <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#detailsModal{{ slip.id }}">
                             <i class="fas fa-eye me-1" title="Prikaži detalje"></i>
@@ -198,6 +212,62 @@
                             </div>
                         </div>
                         
+                        <!-- Modal za ručno rasknjižavanje uplata -->
+                        {% if slip.status == 'nije_placeno' %}
+                        <div class="modal fade" id="manualPaymentModal{{ slip.id }}" tabindex="-1" aria-labelledby="manualPaymentLabel{{ slip.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: var(--reggae-green); color: white;">
+                                        <h5 class="modal-title" id="manualPaymentLabel{{ slip.id }}">
+                                            <i class="fas fa-hand-holding-usd me-2"></i> Ručno rasknjižavanje uplate
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form action="{{ url_for('main.manual_payment', slip_id=slip.id) }}" method="POST">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="amount{{ slip.id }}" class="form-label">Iznos uplate (RSD):</label>
+                                                <input type="number" step="0.01" min="0" max="{{ slip.total_amount }}" class="form-control" id="amount{{ slip.id }}" name="amount" value="{{ slip.total_amount }}" required>
+                                                <small class="text-muted">Ukupan iznos za uplatu: {{ "%.2f"|format(slip.total_amount) }} RSD</small>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="paymentNote{{ slip.id }}" class="form-label">Napomena:</label>
+                                                <textarea class="form-control" id="paymentNote{{ slip.id }}" name="note" rows="2" placeholder="Unesi napomenu o načinu uplate"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Odustani</button>
+                                            <button type="submit" class="btn" style="background-color: var(--reggae-green); color: white;">Potvrdi uplatu</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Modal za brisanje stavke -->
+                        <div class="modal fade" id="deleteModal{{ slip.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ slip.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color: var(--reggae-red); color: white;">
+                                        <h5 class="modal-title" id="deleteModalLabel{{ slip.id }}">
+                                            <i class="fas fa-exclamation-triangle me-2"></i> Potvrda brisanja
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Da li ste sigurni da želite da obrišete uplatnicu #{{ slip.id }} za kupca <strong>{{ slip.customer.name }}</strong>?</p>
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-circle me-2"></i> Ova akcija je nepovratna! Svi podaci o kupovini i rezervisanim kartama će biti trajno obrisani.
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Odustani</button>
+                                        <a href="{{ url_for('main.delete_payment_slip', slip_id=slip.id) }}" class="btn" style="background-color: var(--reggae-red); color: white;">Potvrdi brisanje</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

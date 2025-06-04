@@ -55,5 +55,6 @@ class PaymentItem(db.Model):
     payment_slip_id = db.Column(db.Integer, db.ForeignKey("payment_slips.id"), nullable=False)
     reference_number = db.Column(db.String(50), nullable=False)
     amount = db.Column(db.Numeric(10, 2), nullable=False)
+    note = db.Column(db.String(200), nullable=True, default="")
     payment = db.relationship("Payment", back_populates="items")
     payment_slip = db.relationship("PaymentSlip", back_populates="payment_items")
