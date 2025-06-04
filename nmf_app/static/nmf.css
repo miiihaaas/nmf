@@ -90,6 +90,11 @@ body {
 .btn-reggae-green {
     background-color: var(--reggae-green);
     color: white;
+    /* box-shadow: 0 4px 6px rgba(4, 124, 14, 0.384); */
+}
+
+.btn-reggae-green:hover {
+    box-shadow: 0 4px 6px var(--reggae-green);
 }
 
 .btn-reggae-yellow {
@@ -97,9 +102,17 @@ body {
     color: var(--reggae-black);
 }
 
+.btn-reggae-yellow:hover {
+    box-shadow: 0 4px 6px var(--reggae-yellow);
+}
+
 .btn-reggae-red {
     background-color: var(--reggae-red);
     color: white;
+}
+
+.btn-reggae-red:hover {
+    box-shadow: 0 4px 6px var(--reggae-red);
 }
 
 /* Sekcija za dugmiće */

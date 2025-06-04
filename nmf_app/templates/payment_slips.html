@@ -254,9 +254,9 @@
                                         </h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body">
-                                        <p>Da li ste sigurni da želite da obrišete uplatnicu #{{ slip.id }} za kupca <strong>{{ slip.customer.name }}</strong>?</p>
-                                        <div class="alert alert-warning">
+                                    <div class="modal-body" style="word-wrap: break-word;">
+                                        <p style="word-break: break-word; white-space: normal;">Da li ste sigurni da želite da obrišete uplatnicu <strong>#{{ slip.id }}</strong> za kupca <strong>{{ slip.customer.name }}</strong>?</p>
+                                        <div class="alert alert-warning" style="word-break: break-word; white-space: normal;">
                                             <i class="fas fa-exclamation-circle me-2"></i> Ova akcija je nepovratna! Svi podaci o kupovini i rezervisanim kartama će biti trajno obrisani.
                                         </div>
                                     </div>
@@ -287,27 +287,29 @@
         // Inicijalizacija DataTables na srpskom jeziku
         $('#payment-slips-table').DataTable({
             responsive: true,
+            stateSave: true,
             language: {
-                processing: "Obrada u toku...",
-                search: "Pretraga:",
-                lengthMenu: "Prikaži _MENU_ elemenata",
-                info: "Prikaz _START_ do _END_ od ukupno _TOTAL_ elemenata",
-                infoEmpty: "Prikaz 0 do 0 od ukupno 0 elemenata",
-                infoFiltered: "(filtrirano od ukupno _MAX_ elemenata)",
-                infoPostFix: "",
-                loadingRecords: "Učitavanje...",
-                zeroRecords: "Nije pronađen nijedan rezultat",
-                emptyTable: "Nema podataka u tabeli",
-                paginate: {
-                    first: "Početak",
-                    previous: "Prethodni",
-                    next: "Sledeći",
-                    last: "Kraj"
-                },
-                aria: {
-                    sortAscending: ": aktivirajte za rastući redosled",
-                    sortDescending: ": aktivirajte za opadajući redosled"
-                }
+                url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/sr-SP.json",
+                // processing: "Obrada u toku...",
+                // search: "Pretraga:",
+                // lengthMenu: "Prikaži _MENU_ elemenata",
+                // info: "Prikaz _START_ do _END_ od ukupno _TOTAL_ elemenata",
+                // infoEmpty: "Prikaz 0 do 0 od ukupno 0 elemenata",
+                // infoFiltered: "(filtrirano od ukupno _MAX_ elemenata)",
+                // infoPostFix: "",
+                // loadingRecords: "Učitavanje...",
+                // zeroRecords: "Nije pronađen nijedan rezultat",
+                // emptyTable: "Nema podataka u tabeli",
+                // paginate: {
+                //     first: "Početak",
+                //     previous: "Prethodni",
+                //     next: "Sledeći",
+                //     last: "Kraj"
+                // },
+                // aria: {
+                //     sortAscending: ": aktivirajte za rastući redosled",
+                //     sortDescending: ": aktivirajte za opadajući redosled"
+                // }
             },
             order: [[0, 'desc']], // Sortiranje po ID-u opadajuće
             columnDefs: [
