@@ -232,7 +232,7 @@ def send_payment_reminder(slip_id):
         
         msg = Message(
             subject="🌞 Hej, tvoja karta za Natural Mystic još uvek čeka :)",
-            sender=("Natural Mystic Festival", "info@naturalmysticfestival.rs"),
+            sender=("Natural Mystic Festival", "office@naturalmystic.info"),
             recipients=[recipient_email]
         )
         
