@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Prijava - Natural Mystic Festival{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm mt-5 mb-5">
+            <div class="card-header bg-reggae-green text-white">
+                <h3 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>Prijava</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('auth.login') }}">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email adresa</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Lozinka</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">Zapamti me</label>
+                    </div>
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-reggae-green">Prijavi se</button>
+                    </div>
+                    <div class="text-center">
+                        <small>
+                            <a href="{{ url_for('auth.reset_request') }}" class="text-decoration-none">
+                                Zaboravili ste lozinku?
+                            </a>
+                        </small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

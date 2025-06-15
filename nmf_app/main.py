@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from nmf_app.models import PaymentSlip, Payment, PaymentItem, Customer
 from nmf_app import db, mail
 from flask_mail import Message
+from flask_login import login_required
 
 
 
@@ -17,12 +18,14 @@ def home():
 
 
 @main.route("/payment_slips", methods=["GET", "POST"])
+@login_required
 def payment_slips():
     payment_slips = PaymentSlip.query.all()
     now = datetime.now()
     return render_template("payment_slips.html", payment_slips=payment_slips, now=now)
 
 @main.route("/payments", methods=["GET", "POST"])
+@login_required
 def payments():
     payments = Payment.query.all()
     if request.method == "POST":
@@ -120,6 +123,7 @@ def payments():
 
 
 @main.route("/view_payment/<int:payment_id>", methods=["GET", "POST"])
+@login_required
 def view_payment(payment_id):
     payment = Payment.query.get_or_404(payment_id)
     payment_items = PaymentItem.query.filter_by(payment_id=payment_id).all()
@@ -127,11 +131,13 @@ def view_payment(payment_id):
 
 
 @main.route("/order_ticket_form", methods=["GET", "POST"])
+@login_required
 def order_ticket_form():
     return render_template("order_ticket_form.html")
 
 
 @main.route("/manual_payment/<int:slip_id>", methods=["POST"])
+@login_required
 def manual_payment(slip_id):
     payment_slip = PaymentSlip.query.get_or_404(slip_id)
     
@@ -183,6 +189,7 @@ def manual_payment(slip_id):
 
 
 @main.route("/delete_payment_slip/<int:slip_id>")
+@login_required
 def delete_payment_slip(slip_id):
     payment_slip = PaymentSlip.query.get_or_404(slip_id)
     
@@ -217,6 +224,7 @@ def delete_payment_slip(slip_id):
 
 
 @main.route("/send_payment_reminder/<int:slip_id>")
+@login_required
 def send_payment_reminder(slip_id):
     payment_slip = PaymentSlip.query.get_or_404(slip_id)
     

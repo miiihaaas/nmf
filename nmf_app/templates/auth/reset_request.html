@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Resetovanje lozinke - Natural Mystic Festival{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm mt-5 mb-5">
+            <div class="card-header bg-reggae-yellow text-white">
+                <h3 class="mb-0"><i class="fas fa-lock me-2"></i>Resetovanje lozinke</h3>
+            </div>
+            <div class="card-body p-4">
+                <p>Unesite svoju email adresu kako bismo vam poslali link za resetovanje lozinke.</p>
+                <form method="POST" action="{{ url_for('auth.reset_request') }}">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email adresa</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-reggae-yellow">Pošalji link za resetovanje</button>
+                    </div>
+                    <div class="text-center">
+                        <small>
+                            <a href="{{ url_for('auth.login') }}" class="text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i>Nazad na prijavu
+                            </a>
+                        </small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

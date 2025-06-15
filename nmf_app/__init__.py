@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_mail import Mail
 from flask_cors import CORS
+from flask_login import LoginManager
+from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
 
 
@@ -16,6 +18,8 @@ load_dotenv(dotenv_path=dotenv_path, override=True)
 db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
+bcrypt = Bcrypt()
+login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__)
@@ -40,16 +44,31 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Morate biti prijavljeni da biste pristupili ovoj stranici.'
+    login_manager.login_message_category = 'warning'
     
-    # Registracija blueprint-ova
-    from .main import main as main_blueprint
-    from nmf_app.routes import api as api_blueprint
-    app.register_blueprint(main_blueprint)
-    app.register_blueprint(api_blueprint)
-
+    with app.app_context():
+        # Registracija blueprint-ova
+        from .main import main as main_blueprint
+        app.register_blueprint(main_blueprint)
+        
+        from nmf_app.routes import api as api_blueprint
+        app.register_blueprint(api_blueprint)
+    
     return app
 
 # Omogući direktan import app instance
 app = create_app()
 
 from nmf_app import models
+
+@login_manager.user_loader
+def load_user(user_id):
+    return models.User.query.get(int(user_id))
+
+# Registrujemo auth blueprint nakon što je app i sve ostalo već kreirano
+from nmf_app.auth import auth as auth_blueprint
+app.register_blueprint(auth_blueprint)

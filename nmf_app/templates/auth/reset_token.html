@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}Nova lozinka - Natural Mystic Festival{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm mt-5 mb-5">
+            <div class="card-header bg-reggae-yellow text-white">
+                <h3 class="mb-0"><i class="fas fa-key me-2"></i>Nova lozinka</h3>
+            </div>
+            <div class="card-body p-4">
+                <p>Unesite novu lozinku.</p>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Nova lozinka</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <small class="form-text text-muted">Lozinka mora imati najmanje 8 karaktera, jedno veliko slovo, jedan broj i jedan specijalni znak.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password_confirm" class="form-label">Potvrda lozinke</label>
+                        <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
+                    </div>
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-reggae-yellow">Promeni lozinku</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
