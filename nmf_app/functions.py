@@ -1,6 +1,7 @@
 import os
 import requests
 import io
+from datetime import datetime
 from PIL import Image
 from fpdf import FPDF
 from nmf_app import mail
@@ -356,3 +357,294 @@ def send_email_success_payment(payment_slip):
         import traceback
         print(traceback.format_exc())
         raise
+
+def generate_tickets_list_pdf(payment_slips):
+    """
+    Generiše PDF spisak karata sa tabelarnim prikazom svih uplatnica
+    
+    Args:
+        payment_slips: Lista uplatnica koje treba prikazati u PDF-u
+        
+    Returns:
+        Putanja do generisanog PDF fajla
+    """
+    print("Generišem PDF spisak karata...")
+    
+    class PDF(FPDF):
+        def __init__(self, **kwargs):
+            super(PDF, self).__init__(**kwargs)
+            self.header_height = 10
+            
+        def header(self):
+            # Logo i naslov
+            self.set_y(10)
+            self.set_x(10)
+            # Naslov
+            self.set_font('DejaVuSansCondensed', 'B', 16)
+            self.cell(0, 10, "Natural Mystic Festival - Spisak karata", new_x="LMARGIN", new_y="NEXT", align="C")
+            self.reggae_stripe()
+            # Linija ispod naslova
+            self.ln(5)
+            
+        def footer(self):
+            # Pozicioniranje na 1.5cm od dna
+            self.set_y(-15)
+            self.set_font('DejaVuSansCondensed', '', 8)
+            # Datum generisanja i broj stranice
+            self.cell(0, 10, f"Generisano: {datetime.now().strftime('%d.%m.%Y.')} | Strana {self.page_no()}/{'{nb}'}" , new_x="LMARGIN", new_y="NEXT", align="C")
+            
+        def reggae_stripe(self):
+            width = 150  # mm širina linija
+            height = 3   # mm visina linije
+            # Zelena linija
+            self.set_fill_color(0, 107, 61)  # RGB za reggae zelenu
+            self.rect(self.w/2 - width/2, self.y, width/3, height, style="F")
+            # Žuta linija
+            self.set_fill_color(252, 210, 9)  # RGB za reggae žutu
+            self.rect(self.w/2 - width/2 + width/3, self.y, width/3, height, style="F")
+            # Crvena linija
+            self.set_fill_color(206, 17, 38)  # RGB za reggae crvenu
+            self.rect(self.w/2 - width/2 + 2*width/3, self.y, width/3, height, style="F")
+            self.ln(height + 5) # Pomeranje nakon linije
+        
+        def draw_table_header(self):
+            # Definisane širine kolona - po uzoru na HTML tabelu
+            self.col_widths = [15, 60, 60, 45]  # ID, Kupac, Iznos, Karte
+            
+            # Postavke za header
+            self.set_font('DejaVuSansCondensed', 'B', 10)
+            self.set_fill_color(0, 107, 61)  # Zelena boja za header
+            self.set_text_color(255, 255, 255)  # Beli tekst
+            
+            # Header tekst
+            headers = ['ID', 'Kupac', 'Iznos', 'Karte']
+            
+            # Početna pozicija
+            x_pos = 10
+            
+            # Crtanje header ćelija
+            for i, header in enumerate(headers):
+                self.set_xy(x_pos, self.y)
+                self.cell(self.col_widths[i], 10, header, align="C", fill=True, border=1)
+                x_pos += self.col_widths[i]
+                
+            self.ln(10)  # Razmak nakon headera
+    
+        def draw_row(self, slip, is_first=True):
+            # Proveravamo da li ima dovoljno prostora za naredni red
+            # (procenjujemo minimalnu visinu od 15mm za red + 15mm za footer)
+            if self.y > self.h - 30:
+                self.add_page()
+                # Ponovo crtamo header tabele na novoj stranici
+                self.draw_table_header()
+            
+            # Postavke
+            self.set_font('DejaVuSansCondensed', '', 9)
+            self.set_text_color(0, 0, 0)  # Crni tekst
+            
+            # Boja pozadine zavisi od toga da li je uplaćeno sve
+            filled = slip.total_amount != slip.amount_paid
+            if filled:
+                self.set_fill_color(230, 230, 230)  # Svetlo siva za nepotpune uplate
+            else:
+                self.set_fill_color(255, 255, 255)  # Bela za potpune uplate
+            
+            # Priprema podataka
+            customer_info = f"{slip.customer.name}"
+            if slip.customer.email:
+                customer_info += f"\n{slip.customer.email}"
+            if slip.customer.phone:
+                customer_info += f"\n{slip.customer.phone}"
+                
+            amount_info = f"Za uplatu: {slip.total_amount:.2f} RSD\nUplaćeno: {slip.amount_paid:.2f} RSD"
+            
+            tickets_info = ""
+            for item in slip.items:
+                tickets_info += f"{item.ticket.name}: {item.quantity} kom\n"
+            if tickets_info.endswith("\n"):
+                tickets_info = tickets_info[:-1]  # Uklanjamo poslednji novi red
+            
+            # Pozicija i visina trenutnog reda
+            start_x = 10
+            start_y = self.y
+            
+            # Izračunavanje potrebne visine za sve ćelije
+            max_cell_height = 0
+            
+            # Računamo visinu za svaku ćeliju
+            cell_contents = []
+            
+            if is_first:
+                cell_contents.append(str(slip.id))  # ID ćelija
+            else:
+                cell_contents.append("")  # Prazna ID ćelija
+                
+            cell_contents.extend([customer_info, amount_info, tickets_info])
+            
+            for content in cell_contents:
+                if content:
+                    lines = content.count('\n') + 1
+                    height = lines * 4 + 2  # 4mm po liniji plus padding
+                    max_cell_height = max(max_cell_height, height)
+            
+            # Osiguramo minimalnu visinu
+            max_cell_height = max(max_cell_height, 8)  # Minimum 8mm visine
+            
+            # Sada crtamo ćelije row po row
+            widths = self.col_widths
+            
+            # Crtanje ID ćelije (samo ako je prvi red)
+            if is_first:
+                self.set_xy(start_x, start_y)
+                # Crtamo pravougaonik sa borderom i ispunom
+                if filled:
+                    # Ispunjavamo ceo pravougaonik sivom bojom
+                    self.set_xy(start_x, start_y)
+                    self.rect(start_x, start_y, widths[0], max_cell_height, style='F')
+                # Dodajemo border preko popunjenog pravougaonika
+                self.rect(start_x, start_y, widths[0], max_cell_height, style='D')
+                # Crtamo tekst centriran horizontalno i vertikalno
+                self.set_xy(start_x, start_y + (max_cell_height - 4) / 2)  # Vertikalno centriranje
+                self.cell(widths[0], 4, str(slip.id), align='C', border=0, fill=False)
+            
+            # Prelazimo na sledeću kolonu
+            start_x += widths[0]
+            
+            # Crtanje kupac ćelije
+            self.set_xy(start_x, start_y)
+            # Crtamo pravougaonik sa ispunom ako je potrebno
+            if filled:
+                # Ispunjavamo ceo pravougaonik sivom bojom
+                self.set_xy(start_x, start_y)
+                self.rect(start_x, start_y, widths[1], max_cell_height, style='F')
+            # Dodajemo border preko popunjenog pravougaonika
+            self.rect(start_x, start_y, widths[1], max_cell_height, style='D')
+            # Računamo vertikalni offset za centriranje
+            lines = customer_info.count('\n') + 1
+            line_height = 4  # mm po liniji
+            padding_top = (max_cell_height - (lines * line_height)) / 2
+            if padding_top < 1: padding_top = 1
+            # Postavljamo tekst
+            self.set_xy(start_x + 1, start_y + padding_top)
+            self.multi_cell(widths[1] - 2, line_height, customer_info, align='L', border=0, fill=False)
+            
+            # Prelazimo na sledeću kolonu
+            start_x += widths[1]
+            
+            # Crtanje iznos ćelije
+            self.set_xy(start_x, start_y)
+            # Crtamo pravougaonik sa ispunom ako je potrebno
+            if filled:
+                # Ispunjavamo ceo pravougaonik sivom bojom
+                self.set_xy(start_x, start_y)
+                self.rect(start_x, start_y, widths[2], max_cell_height, style='F')
+            # Dodajemo border preko popunjenog pravougaonika
+            self.rect(start_x, start_y, widths[2], max_cell_height, style='D')
+            # Računamo vertikalni offset za centriranje
+            lines = amount_info.count('\n') + 1
+            padding_top = (max_cell_height - (lines * line_height)) / 2
+            if padding_top < 1: padding_top = 1
+            # Postavljamo tekst
+            self.set_xy(start_x + 1, start_y + padding_top)
+            self.multi_cell(widths[2] - 2, line_height, amount_info, align='L', border=0, fill=False)
+            
+            # Prelazimo na sledeću kolonu
+            start_x += widths[2]
+            
+            # Crtanje karte ćelije
+            self.set_xy(start_x, start_y)
+            # Crtamo pravougaonik sa ispunom ako je potrebno
+            if filled:
+                # Ispunjavamo ceo pravougaonik sivom bojom
+                self.set_xy(start_x, start_y)
+                self.rect(start_x, start_y, widths[3], max_cell_height, style='F')
+            # Dodajemo border preko popunjenog pravougaonika
+            self.rect(start_x, start_y, widths[3], max_cell_height, style='D')
+            # Računamo vertikalni offset za centriranje
+            lines = tickets_info.count('\n') + 1
+            padding_top = (max_cell_height - (lines * line_height)) / 2
+            if padding_top < 1: padding_top = 1
+            # Postavljamo tekst
+            self.set_xy(start_x + 1, start_y + padding_top)
+            self.multi_cell(widths[3] - 2, line_height, tickets_info, align='L', border=0, fill=False)
+            
+            # Pomeramo na sledeći red
+            self.set_y(start_y + max_cell_height)
+            
+        def measure_row_height(self, slip, is_first=True):
+            # Čuvamo trenutnu poziciju
+            original_y = self.y
+            
+            # Merimo visinu za svaku kolonu
+            heights = []
+            
+            # ID uvek ima samo jednu liniju
+            if is_first:
+                heights.append(6)  # Standardna visina za jednu liniju
+            
+            # Kupac info - računamo visinu
+            customer_info = f"{slip.customer.name}"
+            if slip.customer.email:
+                customer_info += f"\n{slip.customer.email}"
+            if slip.customer.phone:
+                customer_info += f"\n{slip.customer.phone}"
+                
+            # Merenje visine kupca
+            start_y = self.y
+            self.multi_cell(self.col_widths[1], 6, customer_info)
+            heights.append(self.y - start_y)
+            self.set_y(original_y)
+            
+            # Iznos info - računamo visinu
+            amount_info = f"Za uplatu: {slip.total_amount:.2f} RSD\nUplaćeno: {slip.amount_paid:.2f} RSD"
+            start_y = self.y
+            self.multi_cell(self.col_widths[2], 6, amount_info)
+            heights.append(self.y - start_y)
+            self.set_y(original_y)
+            
+            # Karte info - računamo visinu
+            tickets_info = ""
+            for item in slip.items:
+                tickets_info += f"{item.ticket.name}: {item.quantity} kom\n"
+                
+            start_y = self.y
+            self.multi_cell(self.col_widths[3], 6, tickets_info)
+            heights.append(self.y - start_y)
+            
+            # Vraćamo originalnu poziciju
+            self.set_y(original_y)
+            
+            # Potrebna visina je maksimum od svih
+            return max(heights) + 2  # Dodajemo malo padding-a
+    
+    # Inicijalizacija PDF-a
+    pdf = PDF(orientation='P')  # Portrait (uspravna) orijentacija
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.alias_nb_pages()  # Za numerisanje stranica {nb}
+    add_fonts(pdf)  # Dodajemo fontove
+    pdf.add_page()
+    
+    # Kreiranje zaglavlja tabele
+    pdf.draw_table_header()
+    
+    # Direktno iteriramo kroz uplatnice, grupisanje ćemo raditi u petlji
+    last_id = None
+    for slip in payment_slips:
+        # Provera da li je prvi red sa ovim ID-jem
+        is_first = (last_id != slip.id)
+        if is_first:
+            last_id = slip.id
+        
+        # Crtanje reda
+        pdf.draw_row(slip, is_first=is_first)
+    
+    # Kreiranje direktorijuma ako ne postoji
+    output_dir = os.path.join(project_folder, 'static', 'tickets_list')
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Čuvanje PDF-a
+    output_path = os.path.join(output_dir, 'tickets_list.pdf')
+    pdf.output(output_path)
+    print(f"PDF spisak karata je sačuvan na putanji: {output_path}")
+    
+    return output_path

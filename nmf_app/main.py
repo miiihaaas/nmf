@@ -16,6 +16,16 @@ main = Blueprint("main", __name__)
 def home():
     return render_template("home.html")
 
+@main.route("/tickets_list")
+@login_required
+def generate_tickets_list():
+    payment_slips = PaymentSlip.query.all()
+    from nmf_app.functions import generate_tickets_list_pdf
+    pdf_path = generate_tickets_list_pdf(payment_slips)
+    # Vraćamo URL sa target="_blank" parametrom koji će otvoriti PDF u novom tabu
+    pdf_url = url_for('static', filename='tickets_list/tickets_list.pdf')
+    return f'<script>window.open("{pdf_url}", "_blank"); window.history.back();</script>'
+
 
 @main.route("/payment_slips", methods=["GET", "POST"])
 @login_required
