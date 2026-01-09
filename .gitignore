@@ -27,3 +27,5 @@ nmf_app/static/payment_slips/
 # Ostalo
 .DS_Store
 Thumbs.db
+
+.claude
