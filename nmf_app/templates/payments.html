@@ -2,6 +2,95 @@
 
 {% block title %}Natural Mystic Festival - Učitavanje izvoda{% endblock %}
 
+{% block extra_css %}
+<style>
+    .upload-card {
+        background: linear-gradient(135deg, rgba(253, 210, 22, 0.15) 0%, rgba(253, 210, 22, 0.08) 100%);
+        border-radius: var(--radius-lg);
+        border: none;
+        box-shadow: var(--shadow-md);
+    }
+
+    .upload-card .card-body {
+        padding: var(--spacing-lg);
+    }
+
+    .upload-card .card-title {
+        color: var(--reggae-green);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    .file-upload-area {
+        border: 2px dashed var(--reggae-yellow);
+        border-radius: var(--radius-md);
+        background-color: rgba(255, 255, 255, 0.7);
+        padding: var(--spacing-md);
+        display: flex;
+        align-items: center;
+        transition: var(--transition-base);
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--reggae-green);
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .file-upload-area.has-file {
+        border-color: var(--reggae-green);
+        background-color: rgba(0, 107, 60, 0.05);
+    }
+
+    .file-display {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        color: #666;
+        font-size: var(--font-size-sm);
+    }
+
+    .file-display.file-selected {
+        color: var(--reggae-green);
+        font-weight: var(--font-weight-medium);
+    }
+
+    #payments-table thead {
+        background: var(--reggae-green) !important;
+    }
+
+    #payments-table thead th {
+        color: var(--reggae-white);
+        font-weight: var(--font-weight-semibold);
+        border: none;
+        padding: var(--spacing-md);
+    }
+
+    #payments-table tbody td {
+        vertical-align: middle;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    #payments-table tbody tr {
+        transition: var(--transition-fast);
+    }
+
+    #payments-table tbody tr:hover {
+        background-color: rgba(0, 107, 60, 0.05);
+    }
+
+    .nav-btn-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+        .nav-btn-container {
+            margin-bottom: var(--spacing-md);
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h1 class="section-title">Učitavanje izvoda</h1>
@@ -17,8 +106,8 @@
             </div>
         </div>
         <div class="col-md-6 mx-auto">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-3" style="background-color: #fdd31654;">
+            <div class="card upload-card">
+                <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
                         <i class="fas fa-file-invoice me-2" style="color: var(--reggae-green);"></i>
                         <h5 class="card-title mb-0" style="color: var(--reggae-green);">Učitavanje XML izvoda</h5>
@@ -27,22 +116,18 @@
                     
                     <form method="POST" enctype="multipart/form-data" action="{{ url_for('main.payments') }}">
                         <div class="mb-2">
-                            <div class="custom-file-container d-flex align-items-center p-2" style="border: 1px dashed var(--reggae-yellow); border-radius: 4px; background-color: rgba(255,255,255,0.5);">
-                                <!-- <input class="form-control form-control-sm border-0 bg-transparent" type="file" id="xmlFile" name="xmlFile" accept=".xml" required style="max-width: 75%;"> -->
-                                <!-- Hidden file input -->
+                            <div class="file-upload-area" id="fileUploadArea">
                                 <input type="file" id="xmlFile" name="xmlFile" accept=".xml" required style="display: none;">
-                                                                    
-                                <!-- Custom file selector -->
-                                <div class="custom-file-display d-flex align-items-center flex-grow-1" onclick="document.getElementById('xmlFile').click()" style="cursor: pointer;">
-                                    <i class="fas fa-file-code me-2" style="color: var(--reggae-green);"></i>
-                                    <span id="fileDisplayText" style="color: #666; font-size: 0.9rem;">Odaberite XML fajl...</span>
+                                <div class="file-display" onclick="document.getElementById('xmlFile').click()">
+                                    <i class="fas fa-file-code me-2" style="color: var(--reggae-green);" aria-hidden="true"></i>
+                                    <span id="fileDisplayText">Odaberite XML fajl...</span>
                                 </div>
-                                <button type="submit" class="btn btn-reggae btn-reggae-yellow ms-auto" style="border-radius: 4px;">
-                                    <i class="fas fa-upload me-1"></i> Učitaj
+                                <button type="submit" class="btn btn-reggae btn-reggae-yellow btn-reggae-sm ms-auto">
+                                    <i class="fas fa-upload me-1" aria-hidden="true"></i> Učitaj
                                 </button>
                             </div>
-                            <div class="form-text small text-center mt-1">
-                                <i class="fas fa-info-circle me-1" style="color: var(--reggae-green);"></i>
+                            <div class="form-text small text-center mt-2">
+                                <i class="fas fa-info-circle me-1 text-reggae-green" aria-hidden="true"></i>
                                 Prihvataju se samo fajlovi sa .xml ekstenzijom.
                             </div>
                         </div>

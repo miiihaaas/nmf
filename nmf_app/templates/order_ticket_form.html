@@ -3,264 +3,572 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uplatnice - Forma za naručivanje</title>
+    <title>Natural Mystic Festival - Naručivanje donatorskih karata</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Reggae Design System */
+        :root {
+            --reggae-green: #006b3c;
+            --reggae-green-light: #008f47;
+            --reggae-yellow: #fdd216;
+            --reggae-yellow-light: #ffeb3b;
+            --reggae-red: #cc3333;
+            --reggae-black: #333333;
+            --reggae-light: #f5f5f5;
+            --reggae-white: #ffffff;
+
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+
+            --transition-fast: 150ms ease;
+            --transition-base: 300ms ease;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-            color: #333;
+            padding: var(--spacing-lg);
+            background-color: var(--reggae-light);
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNmMGYwZjAiPjwvcmVjdD4KPC9zdmc+');
+            color: var(--reggae-black);
+            min-height: 100vh;
         }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1 {
-            color: #2c3e50;
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--reggae-green) 0%, var(--reggae-green-light) 100%);
+            color: var(--reggae-white);
+            padding: var(--spacing-xl);
             text-align: center;
-            margin-bottom: 30px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            margin-bottom: 0;
+            box-shadow: var(--shadow-md);
         }
-        
+
+        .header h1 {
+            margin: 0 0 var(--spacing-sm) 0;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        /* Reggae Stripes */
+        .reggae-stripes {
+            height: 6px;
+            background: linear-gradient(to right,
+                var(--reggae-green) 0%, var(--reggae-green) 33%,
+                var(--reggae-yellow) 33%, var(--reggae-yellow) 66%,
+                var(--reggae-red) 66%, var(--reggae-red) 100%);
+            margin: 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--reggae-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .form-wrapper {
+            padding: var(--spacing-xl);
+        }
+
+        /* Form Sections */
         .form-section {
-            margin-bottom: 25px;
+            margin-bottom: var(--spacing-xl);
         }
-        
-        h2 {
-            color: #3498db;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+
+        .section-title {
+            color: var(--reggae-green);
+            font-size: 20px;
+            font-weight: 600;
+            border-bottom: 3px solid var(--reggae-yellow);
+            padding-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            display: inline-block;
         }
-        
+
+        /* Ticket Cards */
         .karte-container {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
         }
-        
+
         .karta-item {
-            flex: 1;
-            min-width: 200px;
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, var(--reggae-light) 0%, var(--reggae-white) 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 2px solid transparent;
+            transition: var(--transition-base);
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .karta-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--reggae-green), var(--reggae-yellow), var(--reggae-red));
+        }
+
+        .karta-item:hover {
+            border-color: var(--reggae-green);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .karta-item.karta-1000::before { background: var(--reggae-green); }
+        .karta-item.karta-2000::before { background: var(--reggae-yellow); }
+        .karta-item.karta-3000::before { background: var(--reggae-red); }
+
+        .karta-item h3 {
+            color: var(--reggae-green);
+            margin: 0 0 var(--spacing-sm) 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .karta-item p {
+            color: #666;
+            margin: 0 0 var(--spacing-md) 0;
+            font-size: 14px;
+        }
+
+        .karta-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--reggae-black);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .karta-price span {
+            font-size: 14px;
+            font-weight: 400;
+            color: #666;
+        }
+
+        /* Quantity Controls */
         .karta-controls {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-top: 10px;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
         }
-        
+
         .karta-controls button {
-            background: #3498db;
-            color: white;
+            background: var(--reggae-green);
+            color: var(--reggae-white);
             border: none;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            font-size: 18px;
+            font-size: 20px;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition-base);
+            box-shadow: var(--shadow-sm);
         }
-        
-        .karta-controls button:hover {
-            background: #2980b9;
+
+        .karta-controls button:hover:not(:disabled) {
+            background: var(--reggae-green-light);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 107, 60, 0.3);
         }
-        
+
+        .karta-controls button:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
         .karta-controls button:disabled {
             background: #ccc;
             cursor: not-allowed;
+            box-shadow: none;
         }
-        
-        .karta-controls span {
-            font-size: 18px;
-            font-weight: bold;
+
+        .karta-controls button:focus-visible {
+            outline: 3px solid var(--reggae-yellow);
+            outline-offset: 2px;
         }
-        
+
+        .karta-controls .quantity {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--reggae-black);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            background: linear-gradient(135deg, rgba(0, 107, 60, 0.1) 0%, rgba(0, 107, 60, 0.05) 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--reggae-green);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .order-summary p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .order-summary strong {
+            color: var(--reggae-green);
+            font-size: 20px;
+        }
+
+        /* Form Groups */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: var(--spacing-md);
         }
-        
+
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+            color: var(--reggae-black);
+            font-size: 14px;
         }
-        
+
         input[type="text"],
         input[type="email"],
-        input[type="tel"],
-        select {
+        input[type="tel"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius-md);
             font-size: 16px;
+            font-family: inherit;
+            transition: var(--transition-base);
+            background: var(--reggae-white);
         }
-        
-        select {
-            height: 42px;
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            border-color: var(--reggae-green);
+            box-shadow: 0 0 0 3px rgba(0, 107, 60, 0.15);
+            outline: none;
         }
-        
+
+        input[type="text"]:hover,
+        input[type="email"]:hover,
+        input[type="tel"]:hover {
+            border-color: #bbb;
+        }
+
+        /* Submit Button */
         .submit-btn {
-            background: #2ecc71;
-            color: white;
+            background: linear-gradient(135deg, var(--reggae-green) 0%, var(--reggae-green-light) 100%);
+            color: var(--reggae-white);
             border: none;
-            padding: 12px 20px;
+            padding: var(--spacing-md) var(--spacing-xl);
             font-size: 16px;
-            border-radius: 4px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: var(--radius-md);
             cursor: pointer;
             width: 100%;
-            margin-top: 20px;
-            transition: background 0.3s;
+            margin-top: var(--spacing-lg);
+            transition: var(--transition-base);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
         .submit-btn:hover {
-            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 107, 60, 0.4);
         }
-        
-        .order-summary {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+
+        .submit-btn:active {
+            transform: translateY(0);
         }
-        
+
+        .submit-btn:focus-visible {
+            outline: 3px solid var(--reggae-yellow);
+            outline-offset: 2px;
+        }
+
+        /* Messages */
         .error-message {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 5px;
+            color: var(--reggae-red);
+            font-size: 13px;
+            margin-top: var(--spacing-xs);
             display: none;
+            font-weight: 500;
         }
-        
+
         .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
+            background: linear-gradient(135deg, rgba(0, 107, 60, 0.15) 0%, rgba(0, 107, 60, 0.1) 100%);
+            color: var(--reggae-green);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            margin-top: var(--spacing-lg);
             display: none;
+            border-left: 4px solid var(--reggae-green);
+            font-weight: 500;
         }
-        
+
         .error-alert {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
+            background: linear-gradient(135deg, rgba(204, 51, 51, 0.15) 0%, rgba(204, 51, 51, 0.1) 100%);
+            color: var(--reggae-red);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            margin-top: var(--spacing-lg);
             display: none;
+            border-left: 4px solid var(--reggae-red);
+            font-weight: 500;
         }
-        
+
+        /* Footer */
+        .footer {
+            background: var(--reggae-black);
+            color: var(--reggae-white);
+            text-align: center;
+            padding: var(--spacing-lg);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--reggae-yellow);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .footer a:hover {
+            color: var(--reggae-red);
+            text-decoration: underline;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .karte-container {
-                flex-direction: column;
+            body {
+                padding: var(--spacing-md);
             }
-            
+
+            .header {
+                padding: var(--spacing-lg);
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .form-wrapper {
+                padding: var(--spacing-lg);
+            }
+
+            .karte-container {
+                grid-template-columns: 1fr;
+            }
+
             .karta-item {
-                width: 100%;
+                padding: var(--spacing-md);
+            }
+
+            .submit-btn {
+                padding: var(--spacing-md);
             }
         }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .karta-price {
+                font-size: 20px;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .karta-item {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .karta-item:nth-child(1) { animation-delay: 0.1s; }
+        .karta-item:nth-child(2) { animation-delay: 0.2s; }
+        .karta-item:nth-child(3) { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Naručivanje uplatnica</h1>
-        
-        <div id="orderForm">
-            <div class="form-section">
-                <h2>Izaberite količinu</h2>
-                <div class="karte-container">
-                    <div class="karta-item">
-                        <h3>Uplatnica 1000 RSD</h3>
-                        <p>Standardna uplatnica vrednosti 1000 dinara</p>
-                        <div class="karta-controls">
-                            <button type="button" onclick="changeQuantity('karta_1000', -1)" id="decrease1000">-</button>
-                            <span id="karta_1000_count">0</span>
-                            <button type="button" onclick="changeQuantity('karta_1000', 1)" id="increase1000">+</button>
+        <div class="header">
+            <h1>Natural Mystic Festival</h1>
+            <p>Naručivanje donatorskih karata</p>
+        </div>
+        <div class="reggae-stripes"></div>
+
+        <div class="form-wrapper">
+            <div id="orderForm">
+                <div class="form-section">
+                    <h2 class="section-title">Izaberite karte</h2>
+                    <div class="karte-container">
+                        <div class="karta-item karta-1000">
+                            <h3>DK1000</h3>
+                            <p>Donatorska karta</p>
+                            <div class="karta-price">1.000 <span>RSD</span></div>
+                            <div class="karta-controls">
+                                <button type="button" onclick="changeQuantity('karta_1000', -1)" id="decrease1000" aria-label="Smanji broj karata">-</button>
+                                <span class="quantity" id="karta_1000_count">0</span>
+                                <button type="button" onclick="changeQuantity('karta_1000', 1)" id="increase1000" aria-label="Povecaj broj karata">+</button>
+                            </div>
+                        </div>
+                        <div class="karta-item karta-2000">
+                            <h3>DK2000</h3>
+                            <p>Donatorska karta</p>
+                            <div class="karta-price">2.000 <span>RSD</span></div>
+                            <div class="karta-controls">
+                                <button type="button" onclick="changeQuantity('karta_2000', -1)" id="decrease2000" aria-label="Smanji broj karata">-</button>
+                                <span class="quantity" id="karta_2000_count">0</span>
+                                <button type="button" onclick="changeQuantity('karta_2000', 1)" id="increase2000" aria-label="Povecaj broj karata">+</button>
+                            </div>
+                        </div>
+                        <div class="karta-item karta-3000">
+                            <h3>DK3000</h3>
+                            <p>Donatorska karta</p>
+                            <div class="karta-price">3.000 <span>RSD</span></div>
+                            <div class="karta-controls">
+                                <button type="button" onclick="changeQuantity('karta_3000', -1)" id="decrease3000" aria-label="Smanji broj karata">-</button>
+                                <span class="quantity" id="karta_3000_count">0</span>
+                                <button type="button" onclick="changeQuantity('karta_3000', 1)" id="increase3000" aria-label="Povecaj broj karata">+</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="karta-item">
-                        <h3>Uplatnica 2000 RSD</h3>
-                        <p>Standardna uplatnica vrednosti 2000 dinara</p>
-                        <div class="karta-controls">
-                            <button type="button" onclick="changeQuantity('karta_2000', -1)" id="decrease2000">-</button>
-                            <span id="karta_2000_count">0</span>
-                            <button type="button" onclick="changeQuantity('karta_2000', 1)" id="increase2000">+</button>
-                        </div>
+                    <div class="order-summary" id="orderSummary">
+                        <p>Ukupno karata: <strong id="totalCards">0</strong></p>
                     </div>
-                    <div class="karta-item">
-                        <h3>Uplatnica 3000 RSD</h3>
-                        <p>Standardna uplatnica vrednosti 3000 dinara</p>
-                        <div class="karta-controls">
-                            <button type="button" onclick="changeQuantity('karta_3000', -1)" id="decrease3000">-</button>
-                            <span id="karta_3000_count">0</span>
-                            <button type="button" onclick="changeQuantity('karta_3000', 1)" id="increase3000">+</button>
-                        </div>
+                    <div class="error-message" id="karteError">Molimo vas izaberite bar jednu kartu.</div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-title">Podaci o kupcu</h2>
+                    <div class="form-group">
+                        <label for="ime_prezime">Ime i prezime *</label>
+                        <input type="text" id="ime_prezime" name="ime_prezime" required placeholder="Unesite ime i prezime">
+                        <div class="error-message" id="imeError">Ime i prezime je obavezno polje.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="adresa">Adresa *</label>
+                        <input type="text" id="adresa" name="adresa" required placeholder="Unesite adresu">
+                        <div class="error-message" id="adresaError">Adresa je obavezno polje.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="mesto">Mesto *</label>
+                        <input type="text" id="mesto" name="mesto" required placeholder="Unesite mesto">
+                        <div class="error-message" id="mestoError">Mesto je obavezno polje.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="zip">Poštanski broj *</label>
+                        <input type="text" id="zip" name="zip" required placeholder="Unesite poštanski broj">
+                        <div class="error-message" id="zipError">Poštanski broj je obavezno polje.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email adresa *</label>
+                        <input type="email" id="email" name="email" required placeholder="Unesite email adresu">
+                        <div class="error-message" id="emailError">Molimo unesite ispravnu email adresu.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefon">Telefon (opciono)</label>
+                        <input type="tel" id="telefon" name="telefon" placeholder="Unesite broj telefona">
                     </div>
                 </div>
-                <div class="order-summary" id="orderSummary">
-                    <p>Ukupno karata: <strong id="totalCards">0</strong></p>
+
+                <button type="button" class="submit-btn" onclick="submitOrder()">Pošalji narudžbinu</button>
+
+                <div class="success-message" id="successMessage">
+                    Vaša prijava je uspešno poslata! Uskoro ćete dobiti mejl sa uplatnicom.
                 </div>
-                <div class="error-message" id="karteError">Molimo vas izaberite bar jednu kartu.</div>
+
+                <div class="error-alert" id="errorAlert">
+                    Došlo je do greške prilikom slanja narudžbine. Molimo pokušajte ponovo.
+                </div>
             </div>
-            
-            <div class="form-section">
-                <h2>Podaci o kupcu</h2>
-                <div class="form-group">
-                    <label for="ime_prezime">Ime i prezime*</label>
-                    <input type="text" id="ime_prezime" name="ime_prezime" required>
-                    <div class="error-message" id="imeError">Ime i prezime je obavezno polje.</div>
-                </div>
-                <div class="form-group">
-                    <label for="adresa">Adresa*</label>
-                    <input type="text" id="adresa" name="adresa" required>
-                    <div class="error-message" id="adresaError">Adresa je obavezno polje.</div>
-                </div>
-                <div class="form-group">
-                    <label for="mesto">Mesto*</label>
-                    <input type="text" id="mesto" name="mesto" required>
-                    <div class="error-message" id="mestoError">Mesto je obavezno polje.</div>
-                </div>
-                <div class="form-group">
-                    <label for="zip">Poštanski broj*</label>
-                    <input type="text" id="zip" name="zip" required>
-                    <div class="error-message" id="zipError">Poštanski broj je obavezno polje.</div>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email adresa*</label>
-                    <input type="email" id="email" name="email" required>
-                    <div class="error-message" id="emailError">Molimo unesite ispravnu email adresu.</div>
-                </div>
-                <div class="form-group">
-                    <label for="telefon">Telefon (opciono)</label>
-                    <input type="tel" id="telefon" name="telefon">
-                </div>
-                <!-- Uklonjen način preuzimanja iz forme, uvek će biti "na_ulazu" u JSON-u -->
-            </div>
-            
-            <button type="button" class="submit-btn" onclick="submitOrder()">Pošalji narudžbinu</button>
-            
-            <div class="success-message" id="successMessage">
-                Vaša prijava je uspešno poslata! Uskoro ćete dobiti mejl sa uplatnicom.
-            </div>
-            
-            <div class="error-alert" id="errorAlert">
-                Došlo je do greške prilikom slanja narudžbine. Molimo pokušajte ponovo.
-            </div>
+        </div>
+
+        <div class="reggae-stripes"></div>
+        <div class="footer">
+            <p>Natural Mystic Festival | <a href="mailto:office@naturalmystic.info">office@naturalmystic.info</a></p>
         </div>
     </div>
 
@@ -271,7 +579,7 @@
             karta_2000: 0,
             karta_3000: 0
         };
-        
+
         // Funkcija za promenu količine
         function changeQuantity(itemId, change) {
             const newValue = cartItems[itemId] + change;
@@ -281,29 +589,29 @@
                 if (countElement) countElement.textContent = newValue;
                 updateOrderSummary();
             }
-            
+
             // Onemogući dugme - ako je količina 0
             const decreaseElement = document.getElementById(`decrease${itemId.split('_')[1]}`);
             if (decreaseElement) decreaseElement.disabled = (newValue === 0);
         }
-        
+
         // Ažuriranje prikaza narudžbine
         function updateOrderSummary() {
             const totalCards = cartItems.karta_1000 + cartItems.karta_2000 + cartItems.karta_3000;
             const totalCardsElement = document.getElementById('totalCards');
             if (totalCardsElement) totalCardsElement.textContent = totalCards;
         }
-        
+
         // Validacija email-a
         function validateEmail(email) {
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(email);
         }
-        
+
         // Validacija forme
         function validateForm() {
             let isValid = true;
-            
+
             // Provera količine karata
             const totalCards = cartItems.karta_1000 + cartItems.karta_2000 + cartItems.karta_3000;
             const karteErrorElement = document.getElementById('karteError');
@@ -313,13 +621,13 @@
             } else {
                 if (karteErrorElement) karteErrorElement.style.display = 'none';
             }
-            
+
             // Provera osnovnih polja
             const requiredFields = ['ime_prezime', 'adresa', 'mesto', 'zip'];
             requiredFields.forEach(field => {
                 const fieldElement = document.getElementById(field);
                 const errorElement = document.getElementById(`${field}Error`);
-                
+
                 if (fieldElement && errorElement) {
                     if (!fieldElement.value.trim()) {
                         errorElement.style.display = 'block';
@@ -329,11 +637,11 @@
                     }
                 }
             });
-            
+
             // Provera email-a
             const emailElement = document.getElementById('email');
             const emailErrorElement = document.getElementById('emailError');
-            
+
             if (emailElement && emailErrorElement) {
                 const email = emailElement.value.trim();
                 if (!email || !validateEmail(email)) {
@@ -343,24 +651,24 @@
                     emailErrorElement.style.display = 'none';
                 }
             }
-            
+
             return isValid;
         }
-        
+
         // Slanje narudžbine
         function submitOrder() {
             // Sakrij poruke
             const successMessageElement = document.getElementById('successMessage');
             const errorAlertElement = document.getElementById('errorAlert');
-            
+
             if (successMessageElement) successMessageElement.style.display = 'none';
             if (errorAlertElement) errorAlertElement.style.display = 'none';
-            
+
             // Validacija forme
             if (!validateForm()) {
                 return;
             }
-            
+
             // Priprema podataka za slanje
             const orderData = {
                 karte: {
@@ -378,7 +686,7 @@
                     telefon: document.getElementById('telefon')?.value.trim() || ''
                 }
             };
-            
+
             // Slanje podataka na API
             fetch('https://studioimplicit.cloud/NMF/api/uplatnice', {
                 method: 'POST',
@@ -396,7 +704,7 @@
             .then(data => {
                 console.log('Uspeh:', data);
                 if (successMessageElement) successMessageElement.style.display = 'block';
-                
+
                 // Resetuj formu
                 resetForm();
             })
@@ -405,7 +713,7 @@
                 if (errorAlertElement) errorAlertElement.style.display = 'block';
             });
         }
-        
+
         // Resetovanje forme nakon uspešnog slanja
         function resetForm() {
             // Resetuj količine
@@ -430,10 +738,10 @@
             if (decrease1000Element) decrease1000Element.disabled = true;
             if (decrease2000Element) decrease2000Element.disabled = true;
             if (decrease3000Element) decrease3000Element.disabled = true;
-            
+
             // Ažuriraj sažetak
             updateOrderSummary();
-            
+
             // Resetuj polja forme
             const formFields = ['ime_prezime', 'adresa', 'mesto', 'zip', 'email', 'telefon'];
             formFields.forEach(field => {
@@ -441,7 +749,7 @@
                 if (element) element.value = '';
             });
         }
-        
+
         // Inicijalizacija - onemogući dugmad za smanjenje
         document.addEventListener('DOMContentLoaded', function() {
             const decrease1000Element = document.getElementById('decrease1000');
