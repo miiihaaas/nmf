@@ -2,26 +2,122 @@
 
 {% block title %}Natural Mystic Festival - Početna{% endblock %}
 
+{% block extra_css %}
+<style>
+    .hero-section {
+        padding: var(--spacing-3xl) 0;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: var(--font-size-4xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--reggae-green);
+        margin-bottom: var(--spacing-md);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .hero-subtitle {
+        font-size: var(--font-size-lg);
+        color: var(--reggae-black);
+        opacity: 0.8;
+        margin-bottom: var(--spacing-xl);
+        animation: fadeInUp 0.6s ease 0.2s forwards;
+        opacity: 0;
+    }
+
+    .hero-stripes {
+        max-width: 300px;
+        margin: var(--spacing-lg) auto;
+        animation: fadeInUp 0.6s ease 0.1s forwards;
+        opacity: 0;
+    }
+
+    .hero-buttons {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-2xl);
+    }
+
+    .hero-btn {
+        min-width: 200px;
+        padding: var(--spacing-lg) var(--spacing-xl) !important;
+        font-size: var(--font-size-base) !important;
+        opacity: 0;
+    }
+
+    .hero-btn:nth-child(1) { animation: fadeInUp 0.5s ease 0.3s forwards; }
+    .hero-btn:nth-child(2) { animation: fadeInUp 0.5s ease 0.4s forwards; }
+    .hero-btn:nth-child(3) { animation: fadeInUp 0.5s ease 0.5s forwards; }
+
+    .hero-btn i {
+        font-size: var(--font-size-xl);
+        display: block;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: var(--font-size-2xl);
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-btn {
+            width: 100%;
+            max-width: 280px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero-title,
+        .hero-subtitle,
+        .hero-stripes,
+        .hero-btn {
+            animation: none;
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Hero sekcija -->
-<section class="text-center py-5">
-    <h1 class="display-4 fw-bold">Natural Mystic Festival</h1>
-    <div class="reggae-stripes mx-auto my-3" style="max-width: 300px;"></div>
-    <p class="lead">Festival reggae muzike i kulture</p>
-    
+<section class="hero-section">
+    <h1 class="hero-title">Natural Mystic Festival</h1>
+    <div class="reggae-stripes hero-stripes"></div>
+    <p class="hero-subtitle">Admin panel za upravljanje uplatnicama i donatorskim kartama</p>
+
     <!-- Tri velika dugmeta -->
-    <div class="buttons-container mt-5">
-        <a href="{{ url_for('main.payment_slips') }}" class="btn btn-reggae btn-reggae-green btn-lg py-4">
-            <i class="fas fa-file-alt me-2"></i> Uplatnice
+    <div class="hero-buttons">
+        <a href="{{ url_for('main.payment_slips') }}" class="btn btn-reggae btn-reggae-green hero-btn">
+            <i class="fas fa-file-invoice" aria-hidden="true"></i>
+            Uplatnice
         </a>
-        <a href="{{ url_for('main.payments') }}" class="btn btn-reggae btn-reggae-yellow btn-lg py-4">
-            <i class="fas fa-ticket-alt me-2"></i> Izvodi
+        <a href="{{ url_for('main.payments') }}" class="btn btn-reggae btn-reggae-yellow hero-btn">
+            <i class="fas fa-university" aria-hidden="true"></i>
+            Izvodi
         </a>
-        <a href="#" class="btn btn-reggae btn-reggae-red btn-lg py-4">
-            <i class="fas fa-campground me-2"></i> Statistika
+        <a href="#" class="btn btn-reggae btn-reggae-red hero-btn">
+            <i class="fas fa-chart-bar" aria-hidden="true"></i>
+            Statistika
         </a>
     </div>
 </section>
-
-
 {% endblock %}
