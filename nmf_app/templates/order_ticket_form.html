@@ -185,15 +185,6 @@
                 <h2>Izaberite količinu</h2>
                 <div class="karte-container">
                     <div class="karta-item">
-                        <h3>Uplatnica 500 RSD</h3>
-                        <p>Standardna uplatnica vrednosti 500 dinara</p>
-                        <div class="karta-controls">
-                            <button type="button" onclick="changeQuantity('karta_500', -1)" id="decrease500">-</button>
-                            <span id="karta_500_count">0</span>
-                            <button type="button" onclick="changeQuantity('karta_500', 1)" id="increase500">+</button>
-                        </div>
-                    </div>
-                    <div class="karta-item">
                         <h3>Uplatnica 1000 RSD</h3>
                         <p>Standardna uplatnica vrednosti 1000 dinara</p>
                         <div class="karta-controls">
@@ -209,6 +200,15 @@
                             <button type="button" onclick="changeQuantity('karta_2000', -1)" id="decrease2000">-</button>
                             <span id="karta_2000_count">0</span>
                             <button type="button" onclick="changeQuantity('karta_2000', 1)" id="increase2000">+</button>
+                        </div>
+                    </div>
+                    <div class="karta-item">
+                        <h3>Uplatnica 3000 RSD</h3>
+                        <p>Standardna uplatnica vrednosti 3000 dinara</p>
+                        <div class="karta-controls">
+                            <button type="button" onclick="changeQuantity('karta_3000', -1)" id="decrease3000">-</button>
+                            <span id="karta_3000_count">0</span>
+                            <button type="button" onclick="changeQuantity('karta_3000', 1)" id="increase3000">+</button>
                         </div>
                     </div>
                 </div>
@@ -267,9 +267,9 @@
     <script>
         // Objekat za čuvanje količina karata
         const cartItems = {
-            karta_500: 0,
             karta_1000: 0,
-            karta_2000: 0
+            karta_2000: 0,
+            karta_3000: 0
         };
         
         // Funkcija za promenu količine
@@ -289,7 +289,7 @@
         
         // Ažuriranje prikaza narudžbine
         function updateOrderSummary() {
-            const totalCards = cartItems.karta_500 + cartItems.karta_1000 + cartItems.karta_2000;
+            const totalCards = cartItems.karta_1000 + cartItems.karta_2000 + cartItems.karta_3000;
             const totalCardsElement = document.getElementById('totalCards');
             if (totalCardsElement) totalCardsElement.textContent = totalCards;
         }
@@ -305,7 +305,7 @@
             let isValid = true;
             
             // Provera količine karata
-            const totalCards = cartItems.karta_500 + cartItems.karta_1000 + cartItems.karta_2000;
+            const totalCards = cartItems.karta_1000 + cartItems.karta_2000 + cartItems.karta_3000;
             const karteErrorElement = document.getElementById('karteError');
             if (totalCards === 0) {
                 if (karteErrorElement) karteErrorElement.style.display = 'block';
@@ -364,9 +364,9 @@
             // Priprema podataka za slanje
             const orderData = {
                 karte: {
-                    karta_500: cartItems.karta_500,
                     karta_1000: cartItems.karta_1000,
-                    karta_2000: cartItems.karta_2000
+                    karta_2000: cartItems.karta_2000,
+                    karta_3000: cartItems.karta_3000
                 },
                 kupac: {
                     ime_prezime: document.getElementById('ime_prezime')?.value.trim() || '',
@@ -409,27 +409,27 @@
         // Resetovanje forme nakon uspešnog slanja
         function resetForm() {
             // Resetuj količine
-            cartItems.karta_500 = 0;
             cartItems.karta_1000 = 0;
             cartItems.karta_2000 = 0;
-            
+            cartItems.karta_3000 = 0;
+
             // Ažuriraj prikaz
-            const karta500Element = document.getElementById('karta_500_count');
             const karta1000Element = document.getElementById('karta_1000_count');
             const karta2000Element = document.getElementById('karta_2000_count');
-            
-            if (karta500Element) karta500Element.textContent = '0';
+            const karta3000Element = document.getElementById('karta_3000_count');
+
             if (karta1000Element) karta1000Element.textContent = '0';
             if (karta2000Element) karta2000Element.textContent = '0';
-            
+            if (karta3000Element) karta3000Element.textContent = '0';
+
             // Onemogući dugmad za smanjenje
-            const decrease500Element = document.getElementById('decrease500');
             const decrease1000Element = document.getElementById('decrease1000');
             const decrease2000Element = document.getElementById('decrease2000');
-            
-            if (decrease500Element) decrease500Element.disabled = true;
+            const decrease3000Element = document.getElementById('decrease3000');
+
             if (decrease1000Element) decrease1000Element.disabled = true;
             if (decrease2000Element) decrease2000Element.disabled = true;
+            if (decrease3000Element) decrease3000Element.disabled = true;
             
             // Ažuriraj sažetak
             updateOrderSummary();
@@ -444,13 +444,13 @@
         
         // Inicijalizacija - onemogući dugmad za smanjenje
         document.addEventListener('DOMContentLoaded', function() {
-            const decrease500Element = document.getElementById('decrease500');
             const decrease1000Element = document.getElementById('decrease1000');
             const decrease2000Element = document.getElementById('decrease2000');
-            
-            if (decrease500Element) decrease500Element.disabled = true;
+            const decrease3000Element = document.getElementById('decrease3000');
+
             if (decrease1000Element) decrease1000Element.disabled = true;
             if (decrease2000Element) decrease2000Element.disabled = true;
+            if (decrease3000Element) decrease3000Element.disabled = true;
         });
     </script>
 </body>

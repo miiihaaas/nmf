@@ -203,12 +203,12 @@
             <tbody>
                 {% for stavka in stavke %}
                 <tr>
-                    {% if stavka.ticket.name == 'karta_500' %}
-                        <td>DK500</td>
-                    {% elif stavka.ticket.name == 'karta_1000' %}
+                    {% if stavka.ticket.name == 'karta_1000' %}
                         <td>DK1000</td>
                     {% elif stavka.ticket.name == 'karta_2000' %}
                         <td>DK2000</td>
+                    {% elif stavka.ticket.name == 'karta_3000' %}
+                        <td>DK3000</td>
                     {% endif %}
                     <td>{{ stavka.quantity }} kom</td>
                     <td>{{ "%.2f"|format(stavka.ticket.price) }} RSD</td>
