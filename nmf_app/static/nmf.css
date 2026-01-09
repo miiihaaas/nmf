@@ -1,35 +1,139 @@
-/* Reggae boje */
+/* ==========================================
+   NMF - Natural Mystic Festival
+   CSS Design System
+   ========================================== */
+
+/* Reggae boje i Design Tokens */
 :root {
+    /* Primary Colors - Reggae Palette */
     --reggae-green: #006b3c;
+    --reggae-green-light: #008f47;
+    --reggae-green-dark: #005530;
     --reggae-yellow: #fdd216;
+    --reggae-yellow-light: #ffeb3b;
     --reggae-red: #cc3333;
+    --reggae-red-light: #e04545;
     --reggae-black: #333333;
     --reggae-light: #f5f5f5;
+    --reggae-white: #ffffff;
+
+    /* Spacing Scale */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+
+    /* Typography */
+    --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 24px;
+    --font-size-3xl: 32px;
+    --font-size-4xl: 40px;
+    --line-height-tight: 1.25;
+    --line-height-base: 1.6;
+    --line-height-relaxed: 1.75;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+    --shadow-glow-green: 0 4px 14px rgba(0, 107, 60, 0.4);
+    --shadow-glow-yellow: 0 4px 14px rgba(253, 210, 22, 0.4);
+    --shadow-glow-red: 0 4px 14px rgba(204, 51, 51, 0.4);
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-base: 300ms ease;
+    --transition-slow: 500ms ease;
+    --transition-bounce: 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
+/* ==========================================
+   Base Styles
+   ========================================== */
+
 body {
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    color: var(--reggae-black);
     background-color: var(--reggae-light);
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNmMGYwZjAiPjwvcmVjdD4KPC9zdmc+');
 }
 
-/* Navbar stilizacija */
+/* Focus styles for accessibility */
+*:focus-visible {
+    outline: 3px solid var(--reggae-yellow);
+    outline-offset: 2px;
+}
+
+/* ==========================================
+   Navbar
+   ========================================== */
+
 .navbar-reggae {
-    background: linear-gradient(135deg, var(--reggae-green) 0%, #008f47 100%);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, var(--reggae-green) 0%, var(--reggae-green-light) 100%);
+    box-shadow: var(--shadow-md);
     border-bottom: 3px solid var(--reggae-yellow);
+    padding: var(--spacing-sm) 0;
 }
 
 .navbar-brand {
-    font-weight: 700;
-    color: white !important;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+    color: var(--reggae-white) !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    transition: var(--transition-base);
+}
+
+.navbar-brand:hover {
+    transform: scale(1.02);
 }
 
 .nav-link {
-    color: rgba(255,255,255,0.9) !important;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-base);
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--reggae-yellow);
+    transition: var(--transition-base);
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 80%;
 }
 
 .nav-link:hover {
@@ -38,33 +142,63 @@ body {
 }
 
 .navbar-toggler {
-    border-color: rgba(255,255,255,0.5);
+    border-color: rgba(255, 255, 255, 0.5);
+    padding: var(--spacing-sm);
 }
 
-/* Reggae stripovi */
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 3px var(--reggae-yellow);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* ==========================================
+   Reggae Stripes
+   ========================================== */
+
 .reggae-stripes {
     height: 6px;
     background: linear-gradient(to right,
         var(--reggae-green) 0%, var(--reggae-green) 33%,
         var(--reggae-yellow) 33%, var(--reggae-yellow) 66%,
         var(--reggae-red) 66%, var(--reggae-red) 100%);
-    margin: 10px 0;
-    border-radius: 3px;
+    margin: var(--spacing-md) 0;
+    border-radius: var(--radius-sm);
 }
 
-/* Glavni dugmići */
+.reggae-stripes-thin {
+    height: 3px;
+}
+
+.reggae-stripes-thick {
+    height: 10px;
+}
+
+/* ==========================================
+   Buttons
+   ========================================== */
+
 .btn-reggae {
-    padding: 15px 30px;
-    margin: 15px;
-    border-radius: 8px;
-    font-weight: 600;
+    padding: var(--spacing-md) var(--spacing-xl);
+    margin: var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
     text-transform: uppercase;
     letter-spacing: 1px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-md);
     border: none;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
 }
 
 .btn-reggae::before {
@@ -74,8 +208,8 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: all 0.6s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: var(--transition-slow);
 }
 
 .btn-reggae:hover::before {
@@ -84,17 +218,28 @@ body {
 
 .btn-reggae:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    text-decoration: none;
 }
 
+.btn-reggae:active {
+    transform: translateY(-1px);
+}
+
+.btn-reggae:focus-visible {
+    outline: 3px solid var(--reggae-yellow);
+    outline-offset: 2px;
+}
+
+/* Button variants */
 .btn-reggae-green {
     background-color: var(--reggae-green);
-    color: white;
-    /* box-shadow: 0 4px 6px rgba(4, 124, 14, 0.384); */
+    color: var(--reggae-white);
 }
 
 .btn-reggae-green:hover {
-    box-shadow: 0 4px 6px var(--reggae-green);
+    background-color: var(--reggae-green-light);
+    box-shadow: var(--shadow-glow-green);
+    color: var(--reggae-white);
 }
 
 .btn-reggae-yellow {
@@ -103,44 +248,244 @@ body {
 }
 
 .btn-reggae-yellow:hover {
-    box-shadow: 0 4px 6px var(--reggae-yellow);
+    background-color: var(--reggae-yellow-light);
+    box-shadow: var(--shadow-glow-yellow);
+    color: var(--reggae-black);
 }
 
 .btn-reggae-red {
     background-color: var(--reggae-red);
-    color: white;
+    color: var(--reggae-white);
 }
 
 .btn-reggae-red:hover {
-    box-shadow: 0 4px 6px var(--reggae-red);
+    background-color: var(--reggae-red-light);
+    box-shadow: var(--shadow-glow-red);
+    color: var(--reggae-white);
 }
 
-/* Sekcija za dugmiće */
+/* Small button variant */
+.btn-reggae-sm {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    margin: var(--spacing-sm);
+}
+
+/* ==========================================
+   Buttons Section (Home page)
+   ========================================== */
+
 .buttons-section {
     text-align: center;
-    padding: 50px 0;
+    padding: var(--spacing-3xl) 0;
 }
 
 .buttons-container {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: 30px;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
 }
 
-/* Footer */
+/* ==========================================
+   Cards
+   ========================================== */
+
+.card-reggae {
+    background: var(--reggae-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: none;
+    overflow: hidden;
+    transition: var(--transition-base);
+}
+
+.card-reggae:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.card-reggae .card-header {
+    background: linear-gradient(135deg, var(--reggae-green) 0%, var(--reggae-green-light) 100%);
+    color: var(--reggae-white);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+}
+
+.card-reggae .card-body {
+    padding: var(--spacing-lg);
+}
+
+/* ==========================================
+   Tables
+   ========================================== */
+
+.table-reggae {
+    background: var(--reggae-white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.table-reggae thead {
+    background: var(--reggae-green);
+    color: var(--reggae-white);
+}
+
+.table-reggae thead th {
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-md);
+    border: none;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-reggae tbody td {
+    padding: var(--spacing-md);
+    vertical-align: middle;
+    border-bottom: 1px solid var(--reggae-light);
+}
+
+.table-reggae tbody tr {
+    transition: var(--transition-fast);
+}
+
+.table-reggae tbody tr:hover {
+    background-color: rgba(0, 107, 60, 0.05);
+}
+
+/* ==========================================
+   Forms
+   ========================================== */
+
+.form-control-reggae {
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+    transition: var(--transition-base);
+}
+
+.form-control-reggae:focus {
+    border-color: var(--reggae-green);
+    box-shadow: 0 0 0 3px rgba(0, 107, 60, 0.15);
+    outline: none;
+}
+
+.form-label-reggae {
+    font-weight: var(--font-weight-medium);
+    color: var(--reggae-black);
+    margin-bottom: var(--spacing-xs);
+}
+
+/* ==========================================
+   Modals
+   ========================================== */
+
+.modal-reggae .modal-header {
+    background: linear-gradient(135deg, var(--reggae-green) 0%, var(--reggae-green-light) 100%);
+    color: var(--reggae-white);
+    border: none;
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.modal-reggae .modal-title {
+    font-weight: var(--font-weight-semibold);
+}
+
+.modal-reggae .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.modal-reggae .modal-body {
+    padding: var(--spacing-lg);
+}
+
+.modal-reggae .modal-footer {
+    border-top: 1px solid var(--reggae-light);
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.modal-reggae .modal-content {
+    border: none;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+/* ==========================================
+   Alerts
+   ========================================== */
+
+.alert-reggae {
+    border-left: 5px solid var(--reggae-green);
+    background-color: var(--reggae-white);
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.alert-reggae-success {
+    border-left-color: var(--reggae-green);
+    background-color: rgba(0, 107, 60, 0.1);
+}
+
+.alert-reggae-warning {
+    border-left-color: var(--reggae-yellow);
+    background-color: rgba(253, 210, 22, 0.1);
+}
+
+.alert-reggae-danger {
+    border-left-color: var(--reggae-red);
+    background-color: rgba(204, 51, 51, 0.1);
+}
+
+/* ==========================================
+   Status Badges
+   ========================================== */
+
+.badge-reggae {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-reggae-success {
+    background-color: var(--reggae-green);
+    color: var(--reggae-white);
+}
+
+.badge-reggae-warning {
+    background-color: var(--reggae-yellow);
+    color: var(--reggae-black);
+}
+
+.badge-reggae-danger {
+    background-color: var(--reggae-red);
+    color: var(--reggae-white);
+}
+
+/* ==========================================
+   Footer
+   ========================================== */
+
 .footer {
     background-color: var(--reggae-black);
-    color: white;
-    padding: 30px 0;
-    margin-top: 50px;
+    color: var(--reggae-white);
+    padding: var(--spacing-xl) 0;
+    margin-top: var(--spacing-3xl);
     border-top: 3px solid var(--reggae-green);
 }
 
 .footer a {
     color: var(--reggae-yellow);
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: var(--transition-base);
 }
 
 .footer a:hover {
@@ -148,31 +493,152 @@ body {
     text-decoration: underline;
 }
 
-/* Naslovi */
+/* ==========================================
+   Section Titles
+   ========================================== */
+
 .section-title {
     color: var(--reggae-green);
-    border-bottom: 2px solid var(--reggae-yellow);
-    padding-bottom: 10px;
-    margin-bottom: 30px;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-2xl);
+    border-bottom: 3px solid var(--reggae-yellow);
+    padding-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
     display: inline-block;
 }
 
-/* Fleševi */
-.alert-reggae {
-    border-left: 5px solid var(--reggae-green);
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+/* ==========================================
+   Loading & Animations
+   ========================================== */
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responzivnost */
-@media (max-width: 768px) {
-    .btn-reggae {
-        padding: 12px 25px;
-        margin: 10px;
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn var(--transition-base) ease forwards;
+}
+
+.animate-slide-up {
+    animation: slideUp var(--transition-base) ease forwards;
+}
+
+.animate-pulse {
+    animation: pulse 2s ease infinite;
+}
+
+/* Staggered animation delays */
+.animate-delay-1 { animation-delay: 100ms; }
+.animate-delay-2 { animation-delay: 200ms; }
+.animate-delay-3 { animation-delay: 300ms; }
+
+/* ==========================================
+   File Upload
+   ========================================== */
+
+.file-upload-reggae {
+    border: 2px dashed var(--reggae-green);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    background-color: var(--reggae-white);
+    transition: var(--transition-base);
+    cursor: pointer;
+}
+
+.file-upload-reggae:hover,
+.file-upload-reggae.drag-over {
+    border-color: var(--reggae-yellow);
+    background-color: rgba(253, 210, 22, 0.1);
+}
+
+.file-upload-reggae i {
+    font-size: var(--font-size-4xl);
+    color: var(--reggae-green);
+    margin-bottom: var(--spacing-md);
+}
+
+/* ==========================================
+   Utility Classes
+   ========================================== */
+
+.text-reggae-green { color: var(--reggae-green) !important; }
+.text-reggae-yellow { color: var(--reggae-yellow) !important; }
+.text-reggae-red { color: var(--reggae-red) !important; }
+
+.bg-reggae-green { background-color: var(--reggae-green) !important; }
+.bg-reggae-yellow { background-color: var(--reggae-yellow) !important; }
+.bg-reggae-red { background-color: var(--reggae-red) !important; }
+
+/* ==========================================
+   Responsive Design
+   ========================================== */
+
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: var(--reggae-green);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        margin-top: var(--spacing-sm);
     }
-    
+}
+
+@media (max-width: 768px) {
+    :root {
+        --font-size-3xl: 28px;
+        --font-size-4xl: 32px;
+    }
+
+    .btn-reggae {
+        padding: var(--spacing-sm) var(--spacing-lg);
+        margin: var(--spacing-sm);
+        width: 100%;
+        max-width: 280px;
+    }
+
     .buttons-container {
         flex-direction: column;
         align-items: center;
+    }
+
+    .buttons-section {
+        padding: var(--spacing-2xl) 0;
+    }
+
+    .section-title {
+        font-size: var(--font-size-xl);
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --spacing-lg: 20px;
+        --spacing-xl: 24px;
+    }
+
+    .btn-reggae {
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

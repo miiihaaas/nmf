@@ -2,6 +2,105 @@
 
 {% block title %}Natural Mystic Festival - Pregled uplatnica{% endblock %}
 
+{% block extra_css %}
+<style>
+    .info-card {
+        background: linear-gradient(135deg, rgba(0, 107, 60, 0.1) 0%, rgba(0, 107, 60, 0.05) 100%);
+        border-radius: var(--radius-lg);
+        border: none;
+        box-shadow: var(--shadow-md);
+    }
+
+    .info-card .card-body {
+        padding: var(--spacing-lg);
+    }
+
+    .info-card h5 {
+        color: var(--reggae-green);
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .info-card h6 {
+        color: var(--reggae-green);
+        font-weight: var(--font-weight-medium);
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .action-buttons .btn-row {
+        display: flex;
+        gap: var(--spacing-sm);
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    #payment-slips-table thead {
+        background: var(--reggae-green) !important;
+    }
+
+    #payment-slips-table thead th {
+        color: var(--reggae-white);
+        font-weight: var(--font-weight-semibold);
+        border: none;
+        padding: var(--spacing-md);
+    }
+
+    #payment-slips-table tbody td {
+        vertical-align: middle;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    #payment-slips-table tbody tr {
+        transition: var(--transition-fast);
+    }
+
+    #payment-slips-table tbody tr:hover {
+        background-color: rgba(0, 107, 60, 0.05);
+    }
+
+    .status-icon {
+        font-size: 1.25rem;
+    }
+
+    .action-btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .modal-reggae .modal-header {
+        background: linear-gradient(135deg, var(--reggae-green) 0%, var(--reggae-green-light) 100%);
+        color: var(--reggae-white);
+        border: none;
+    }
+
+    .modal-reggae-danger .modal-header {
+        background: linear-gradient(135deg, var(--reggae-red) 0%, var(--reggae-red-light) 100%);
+    }
+
+    .modal-reggae .modal-content {
+        border: none;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    .modal-reggae .btn-close-white {
+        filter: brightness(0) invert(1);
+    }
+
+    @media (max-width: 768px) {
+        .action-buttons .btn-row {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h1 class="section-title">Pregled uplatnica</h1>
@@ -9,10 +108,10 @@
     
     <div class="row mb-4">
         <div class="col-md-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body" style="background-color: #006b3d5b;">
-                    <h5 class="card-title" style="color: var(--reggae-green);">
-                        <i class="fas fa-info-circle me-2"></i> Informacije
+            <div class="card info-card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle me-2" aria-hidden="true"></i> Informacije
                     </h5>
                     <div class="row">
                         <div class="col-md-6">
