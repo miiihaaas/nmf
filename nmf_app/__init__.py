@@ -57,6 +57,9 @@ def create_app():
         
         from nmf_app.routes import api as api_blueprint
         app.register_blueprint(api_blueprint)
+
+        from nmf_app.sponsors import sponsors_api as sponsors_api_blueprint
+        app.register_blueprint(sponsors_api_blueprint)
     
     return app
 

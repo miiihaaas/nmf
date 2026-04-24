@@ -358,6 +358,62 @@ def send_email_success_payment(payment_slip):
         print(traceback.format_exc())
         raise
 
+def send_sponsor_inquiry_to_owner(prijava):
+    print(f"Slanje notifikacije vlasniku o sponzorskoj prijavi - {prijava['kompanija']}")
+
+    subject = f"Nova sponzorska prijava — {prijava['kompanija']}"
+
+    msg = Message(
+        subject=subject,
+        sender=os.getenv("MAIL_USERNAME"),
+        recipients=[os.getenv("MAIL_ADMIN")],
+        reply_to=prijava["email"],
+    )
+
+    msg.html = render_template(
+        "email_sponsor_inquiry.html",
+        prijava=prijava,
+        datum=datetime.now(),
+    )
+
+    try:
+        mail.send(msg)
+        print(f"Notifikacija o sponzorskoj prijavi uspešno poslata vlasniku: {prijava['kompanija']}")
+        return True
+    except Exception as e:
+        print(f"Greška pri slanju notifikacije vlasniku: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        raise
+
+
+def send_sponsor_thank_you(prijava):
+    print(f"Slanje zahvalnice sponzoru - {prijava['email']}")
+
+    subject = "Hvala na interesovanju — Natural Mystic Festival 2026"
+
+    msg = Message(
+        subject=subject,
+        sender=os.getenv("MAIL_USERNAME"),
+        recipients=[prijava["email"]],
+    )
+
+    msg.html = render_template(
+        "email_sponsor_thank_you.html",
+        prijava=prijava,
+    )
+
+    try:
+        mail.send(msg)
+        print(f"Zahvalnica uspešno poslata sponzoru: {prijava['email']}")
+        return True
+    except Exception as e:
+        print(f"Greška pri slanju zahvalnice sponzoru: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        raise
+
+
 def generate_tickets_list_pdf(payment_slips):
     """
     Generiše PDF spisak karata sa tabelarnim prikazom svih uplatnica

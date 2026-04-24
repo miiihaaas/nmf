@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hvala na interesovanju - Natural Mystic Festival</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNmMGYwZjAiPjwvcmVjdD4KPC9zdmc+');
+        }
+
+        .header {
+            background: linear-gradient(135deg, #006b3c 0%, #008f47 100%);
+            color: white;
+            padding: 35px 25px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-bottom: 5px solid #fdd216;
+        }
+
+        .header .badge {
+            display: inline-block;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: rgba(253, 210, 22, 0.2);
+            border: 1px solid rgba(253, 210, 22, 0.5);
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 30px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.92;
+            font-weight: 400;
+        }
+
+        .reggae-stripes {
+            height: 6px;
+            background: linear-gradient(to right,
+                #006b3c 0%, #006b3c 33%,
+                #fdd216 33%, #fdd216 66%,
+                #cc3333 66%, #cc3333 100%);
+            margin: 0;
+        }
+
+        .intro {
+            background-color: #fff;
+            padding: 30px 28px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid #006b3c;
+            font-size: 1.05em;
+            line-height: 1.75;
+        }
+
+        .intro .greeting {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: #006b3c;
+            margin: 0 0 12px 0;
+        }
+
+        .intro p {
+            margin: 12px 0;
+        }
+
+        .section {
+            background-color: #fff;
+            padding: 25px 28px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section.summary {
+            border-left: 5px solid #fdd216;
+        }
+
+        .section.next {
+            border-left: 5px solid #cc3333;
+        }
+
+        .section.about {
+            border-left: 5px solid #006b3c;
+            background-color: #fafafa;
+        }
+
+        .section h2 {
+            color: #006b3c;
+            margin: 0 0 18px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .summary-grid {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .summary-grid tr td {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14.5px;
+            vertical-align: top;
+        }
+
+        .summary-grid tr:last-child td {
+            border-bottom: none;
+        }
+
+        .summary-grid .label {
+            width: 38%;
+            color: #666;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 12px;
+            padding-right: 16px;
+        }
+
+        .summary-grid .value {
+            color: #222;
+            font-weight: 500;
+        }
+
+        .summary-grid .value.highlight {
+            color: #006b3c;
+            font-weight: 600;
+        }
+
+        .summary-grid .message-value {
+            white-space: pre-wrap;
+            font-style: italic;
+            color: #444;
+            background: #fafafa;
+            padding: 10px 12px;
+            border-radius: 4px;
+            border-left: 3px solid #fdd216;
+        }
+
+        .next-timeline {
+            display: block;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .next-timeline li {
+            position: relative;
+            padding: 8px 0 8px 32px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .next-timeline li::before {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 15px;
+            width: 10px;
+            height: 10px;
+            background: #fdd216;
+            border: 2px solid #006b3c;
+            border-radius: 50%;
+        }
+
+        .next-timeline li.done::before {
+            background: #006b3c;
+        }
+
+        .about-meta {
+            display: table;
+            width: 100%;
+            margin-top: 14px;
+            border-top: 1px dashed #ddd;
+            padding-top: 14px;
+        }
+
+        .about-meta-row {
+            display: table-row;
+        }
+
+        .about-meta-cell {
+            display: table-cell;
+            padding: 4px 12px 4px 0;
+            font-size: 13.5px;
+        }
+
+        .about-meta-cell .k {
+            color: #888;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .about-meta-cell .v {
+            color: #222;
+            font-weight: 600;
+        }
+
+        .closing {
+            text-align: center;
+            padding: 28px 20px;
+            margin: 24px 0 10px;
+            color: #444;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .closing .signature {
+            font-weight: 600;
+            color: #006b3c;
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        .closing .hearts {
+            font-size: 20px;
+            letter-spacing: 4px;
+            margin-top: 6px;
+        }
+
+        .footer {
+            margin-top: 0;
+            padding: 22px 15px 28px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 3px solid #006b3c;
+            background-color: #f9f9f9;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .footer strong {
+            color: #006b3c;
+        }
+
+        .footer a {
+            color: #cc3333;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px dotted #cc3333;
+            padding-bottom: 2px;
+        }
+
+        .footer a:hover {
+            color: #006b3c;
+            border-bottom: 1px solid #006b3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Natural Mystic Festival</h1>
+    </div>
+    <div class="reggae-stripes"></div>
+
+    <div class="intro">
+        <p class="greeting">Poštovani,</p>
+        <p>Upit je stigao. Konkretan odgovor poslaćemo Vam u roku od <strong>24 sata</strong>.</p>
+    </div>
+
+    <div class="section summary">
+        <h2>Pregled Vaše prijave</h2>
+        <table class="summary-grid">
+            <tr>
+                <td class="label">Kompanija</td>
+                <td class="value highlight">{{ prijava.kompanija }}</td>
+            </tr>
+            <tr>
+                <td class="label">Kontakt osoba</td>
+                <td class="value">{{ prijava.ime_prezime }}</td>
+            </tr>
+            <tr>
+                <td class="label">Email</td>
+                <td class="value">{{ prijava.email }}</td>
+            </tr>
+            <tr>
+                <td class="label">Telefon</td>
+                <td class="value">{{ prijava.telefon }}</td>
+            </tr>
+            <tr>
+                <td class="label">Budžetski okvir</td>
+                <td class="value highlight">{{ prijava.budzet_label }}</td>
+            </tr>
+            <tr>
+                <td class="label">Tip saradnje</td>
+                <td class="value highlight">{{ prijava.tip_saradnje_label }}</td>
+            </tr>
+            {% if prijava.website %}
+            <tr>
+                <td class="label">Website</td>
+                <td class="value">{{ prijava.website }}</td>
+            </tr>
+            {% endif %}
+            {% if prijava.poruka %}
+            <tr>
+                <td class="label">Poruka</td>
+                <td class="value">
+                    <div class="message-value">{{ prijava.poruka }}</div>
+                </td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+
+    <div class="reggae-stripes"></div>
+
+    <div class="closing">
+        <p>Srdačan pozdrav,</p>
+        <p class="signature">Dušan Simović</p>
+    </div>
+
+    <div class="footer">
+        <p><strong>Natural Mystic Festival</strong></p>
+        <p><a href="mailto:office@naturalmystic.info">office@naturalmystic.info</a></p>
+        <p><a href="https://naturalmystic.info">naturalmystic.info</a> &nbsp;·&nbsp; <a href="https://partners.naturalmystic.info">partners.naturalmystic.info</a></p>
+        <div class="reggae-stripes" style="width: 120px; margin: 14px auto 0; border-radius: 3px;"></div>
+    </div>
+</body>
+</html>
