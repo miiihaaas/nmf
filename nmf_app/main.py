@@ -3,7 +3,7 @@ import decimal
 import os
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
-from nmf_app.models import PaymentSlip, Payment, PaymentItem, Customer
+from nmf_app.models import PaymentSlip, Payment, PaymentItem, Customer, UnallocatedPayment
 from nmf_app import db, mail
 from flask_mail import Message
 from flask_login import login_required
@@ -11,6 +11,25 @@ from flask_login import login_required
 
 
 main = Blueprint("main", __name__)
+
+
+def _xml_text(element):
+    """Bezbedno vraća očišćen tekst XML elementa ('' ako element ne postoji ili je prazan)."""
+    if element is None or element.text is None:
+        return ""
+    return element.text.strip()
+
+
+def _apply_payment_to_slip(payment_slip, amount):
+    """Dodaje uplaćeni iznos na uplatnicu i ažurira njen status."""
+    payment_slip.amount_paid += amount
+    if payment_slip.amount_paid >= payment_slip.total_amount:
+        payment_slip.status = "placeno"
+    elif payment_slip.amount_paid >= decimal.Decimal("500.00"):
+        payment_slip.status = "delimicno_placeno"
+    else:
+        payment_slip.status = "nije_placeno"
+
 
 @main.route("/")
 def home():
@@ -80,44 +99,65 @@ def payments():
                 db.session.add(payment)
                 db.session.flush()
                 
-                payment_items = root.findall('trnlist/stmttrn')
-                print(f'*{payment_items=}')
-                for payment_item in payment_items:
-                    print(f'**{payment_item=}')
-                    name = payment_item.find('payeeinfo/name').text.strip()
-                    reference_number = payment_item.find('refnumber').text.strip()
-                    reference_model = payment_item.find('refmodel').text.strip()
-                    amount = payment_item.find('trnamt').text.strip()
-                    
-                    print(f'***{name=}')
-                    print(f'***{reference_number=}')
-                    print(f'***{reference_model=}')
-                    print(f'***{amount=}')
-                    
-                    payment_slip_id = None
-                    if reference_model == "97":
-                        payment_slip_id = int(reference_number[2:])
-                        print(f'***{payment_slip_id=}')
-                    if payment_slip_id:
-                        payment_item = PaymentItem(
+                stmttrns = root.findall('trnlist/stmttrn')
+                linked_count = 0
+
+                for stmttrn in stmttrns:
+                    payer_name = _xml_text(stmttrn.find('payeeinfo/name'))
+                    reference_number = _xml_text(stmttrn.find('refnumber'))
+                    reference_model = _xml_text(stmttrn.find('refmodel'))
+                    purpose = _xml_text(stmttrn.find('purpose'))
+                    amount_raw = _xml_text(stmttrn.find('trnamt'))
+
+                    try:
+                        amount = decimal.Decimal(amount_raw)
+                    except (decimal.InvalidOperation, TypeError):
+                        amount = decimal.Decimal(0)
+
+                    # Uplatnicu tražimo samo za model 97 sa ispravnim numeričkim pozivom na broj.
+                    # Slip se UČITAVA pre dodavanja PaymentItem-a kako autoflush ne bi
+                    # prevremeno upisao stavku i oborio FK ograničenje (uzrok ranije greške).
+                    payment_slip = None
+                    if reference_model == "97" and len(reference_number) > 2 and reference_number[2:].isdigit():
+                        payment_slip = PaymentSlip.query.get(int(reference_number[2:]))
+
+                    if payment_slip is not None:
+                        db.session.add(PaymentItem(
                             payment_id=payment.id,
-                            payment_slip_id=payment_slip_id,
+                            payment_slip_id=payment_slip.id,
                             reference_number=reference_number,
                             amount=amount
-                        )
-                        db.session.add(payment_item)
-                        payment_slip = PaymentSlip.query.get(payment_slip_id)
-                        payment_slip.amount_paid += decimal.Decimal(amount)
-                        if payment_slip.amount_paid >= payment_slip.total_amount:
-                            payment_slip.status = "placeno"
-                        if payment_slip.amount_paid < 500.00:
-                            payment_slip.status = "nije_placeno"
-                        if payment_slip.amount_paid >= 500.00 and payment_slip.amount_paid < payment_slip.total_amount:
-                            payment_slip.status = "delimicno_placeno"
+                        ))
+                        _apply_payment_to_slip(payment_slip, amount)
+                        linked_count += 1
                     else:
-                        continue
-                flash("Izvod je uspešno dodat.", "success")
+                        if reference_model != "97":
+                            reason = "nije model 97"
+                        elif not (len(reference_number) > 2 and reference_number[2:].isdigit()):
+                            reason = "neispravan poziv na broj"
+                        else:
+                            reason = "uplatnica ne postoji"
+                        db.session.add(UnallocatedPayment(
+                            payment_id=payment.id,
+                            payer_name=payer_name,
+                            reference_number=reference_number,
+                            reference_model=reference_model,
+                            amount=amount,
+                            purpose=purpose,
+                            reason=reason
+                        ))
+
                 db.session.commit()
+
+                unallocated_count = len(stmttrns) - linked_count
+                if unallocated_count:
+                    flash(
+                        f"Izvod je sačuvan. Povezano uplata: {linked_count}, "
+                        f"neraspoređeno: {unallocated_count}. Neraspoređene uplate možete ručno povezati.",
+                        "warning"
+                    )
+                else:
+                    flash(f"Izvod je uspešno dodat. Povezano uplata: {linked_count}.", "success")
             except Exception as e:
                 flash(f"Došlo je do greške prilikom obrade XML fajla: {str(e)}", "danger")
                 db.session.rollback()
@@ -138,6 +178,71 @@ def view_payment(payment_id):
     payment = Payment.query.get_or_404(payment_id)
     payment_items = PaymentItem.query.filter_by(payment_id=payment_id).all()
     return render_template("view_payment.html", payment=payment, payment_items=payment_items)
+
+
+@main.route("/unallocated_payments", methods=["GET"])
+@login_required
+def unallocated_payments():
+    items = (
+        UnallocatedPayment.query.filter_by(is_resolved=False)
+        .order_by(UnallocatedPayment.created_at.desc())
+        .all()
+    )
+    # uplatnice koje još nisu u potpunosti plaćene su kandidati za ručno povezivanje
+    slips = (
+        PaymentSlip.query.filter(PaymentSlip.status != "placeno")
+        .order_by(PaymentSlip.id.desc())
+        .all()
+    )
+    return render_template("unallocated_payments.html", items=items, slips=slips)
+
+
+@main.route("/resolve_unallocated/<int:item_id>", methods=["POST"])
+@login_required
+def resolve_unallocated(item_id):
+    unallocated = UnallocatedPayment.query.get_or_404(item_id)
+    if unallocated.is_resolved:
+        flash("Ova uplata je već povezana.", "warning")
+        return redirect(url_for("main.unallocated_payments"))
+
+    slip_id = request.form.get("slip_id", type=int)
+    payment_slip = PaymentSlip.query.get(slip_id) if slip_id else None
+    if payment_slip is None:
+        flash("Izabrana uplatnica ne postoji.", "danger")
+        return redirect(url_for("main.unallocated_payments"))
+
+    try:
+        db.session.add(PaymentItem(
+            payment_id=unallocated.payment_id,
+            payment_slip_id=payment_slip.id,
+            reference_number=unallocated.reference_number or f"00{payment_slip.id}",
+            amount=unallocated.amount,
+            note="Ručno povezano iz neraspoređenih uplata"
+        ))
+        _apply_payment_to_slip(payment_slip, unallocated.amount)
+        unallocated.is_resolved = True
+        db.session.commit()
+        flash(
+            f"Uplata od {unallocated.amount} RSD je povezana sa uplatnicom #{payment_slip.id}.",
+            "success"
+        )
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Došlo je do greške prilikom povezivanja: {str(e)}", "danger")
+
+    return redirect(url_for("main.unallocated_payments"))
+
+
+@main.route("/dismiss_unallocated/<int:item_id>", methods=["POST"])
+@login_required
+def dismiss_unallocated(item_id):
+    unallocated = UnallocatedPayment.query.get_or_404(item_id)
+    if not unallocated.is_resolved:
+        # odbacivanje ne kreira PaymentItem niti dira uplatnicu — uplata samo nestaje sa liste
+        unallocated.is_resolved = True
+        db.session.commit()
+        flash(f"Uplata #{unallocated.id} je odbačena.", "success")
+    return redirect(url_for("main.unallocated_payments"))
 
 
 @main.route("/order_ticket_form", methods=["GET", "POST"])

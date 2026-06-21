@@ -1,0 +1,187 @@
+{% extends "layout.html" %}
+
+{% block title %}Natural Mystic Festival - Neraspoređene uplate{% endblock %}
+
+{% block extra_css %}
+<style>
+    #unallocated-table thead {
+        background: var(--reggae-green) !important;
+    }
+
+    #unallocated-table thead th {
+        color: var(--reggae-white);
+        font-weight: var(--font-weight-semibold);
+        border: none;
+        padding: var(--spacing-md);
+    }
+
+    #unallocated-table tbody td {
+        vertical-align: middle;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    #unallocated-table tbody tr {
+        transition: var(--transition-fast);
+    }
+
+    #unallocated-table tbody tr:hover {
+        background-color: rgba(0, 107, 60, 0.05);
+    }
+
+    .reason-badge {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+    }
+
+    .empty-state {
+        background-color: rgba(0, 107, 60, 0.05);
+        border: 2px dashed var(--reggae-green);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-lg);
+        text-align: center;
+        color: var(--reggae-green);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row align-items-center mb-2">
+        <div class="col-md-7">
+            <h1 class="section-title">Neraspoređene uplate</h1>
+            <div class="reggae-stripes mb-3" style="width: 150px;"></div>
+        </div>
+        <div class="col-md-5">
+            <div class="d-flex gap-2 justify-content-md-end">
+                <a href="{{ url_for('main.payments') }}" class="btn btn-reggae btn-reggae-yellow">
+                    <i class="fas fa-ticket-alt me-2"></i> Izvodi
+                </a>
+                <a href="{{ url_for('main.payment_slips') }}" class="btn btn-reggae btn-reggae-green">
+                    <i class="fas fa-file-invoice me-2"></i> Uplatnice
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-muted">
+        <i class="fas fa-info-circle me-1 text-reggae-green"></i>
+        Uplate iz izvoda koje nisu automatski povezane sa uplatnicom. Povežite ih ručno ako pripadaju nekoj uplatnici.
+    </p>
+
+    {% if items %}
+    <div class="table-responsive">
+        <table class="table table-hover dt-responsive nowrap" id="unallocated-table" style="width:100%">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Izvod</th>
+                    <th scope="col">Uplatilac</th>
+                    <th scope="col">Poziv na broj</th>
+                    <th scope="col">Iznos</th>
+                    <th scope="col">Razlog</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <th scope="row">{{ item.id }}</th>
+                    <td>{{ item.payment.statement_number }}</td>
+                    <td>{{ item.payer_name or '—' }}</td>
+                    <td>
+                        {% if item.reference_model %}<span class="text-muted">({{ item.reference_model }})</span> {% endif %}
+                        {{ item.reference_number or '—' }}
+                    </td>
+                    <td>{{ "%.2f"|format(item.amount) }} RSD</td>
+                    <td>
+                        <span class="badge rounded-pill bg-light text-dark reason-badge">{{ item.reason }}</span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-reggae btn-reggae-green btn-reggae-sm"
+                                data-bs-toggle="modal" data-bs-target="#resolveModal{{ item.id }}">
+                            <i class="fas fa-link me-1"></i> Poveži
+                        </button>
+                        <form method="POST" action="{{ url_for('main.dismiss_unallocated', item_id=item.id) }}"
+                              class="d-inline"
+                              onsubmit="return confirm('Odbaciti ovu uplatu? Neće biti povezana ni sa jednom uplatnicom.');">
+                            <button type="submit" class="btn btn-reggae btn-reggae-red btn-reggae-sm">
+                                <i class="fas fa-times me-1"></i> Odbaci
+                            </button>
+                        </form>
+
+                        <!-- Modal za ručno povezivanje -->
+                        <div class="modal fade" id="resolveModal{{ item.id }}" tabindex="-1"
+                             aria-labelledby="resolveModalLabel{{ item.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="POST" action="{{ url_for('main.resolve_unallocated', item_id=item.id) }}">
+                                        <div class="modal-header" style="background-color: var(--reggae-green); color: white;">
+                                            <h5 class="modal-title" id="resolveModalLabel{{ item.id }}">
+                                                <i class="fas fa-link me-2"></i> Poveži uplatu #{{ item.id }}
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Zatvori"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="mb-1"><strong>Uplatilac:</strong> {{ item.payer_name or '—' }}</p>
+                                            <p class="mb-1"><strong>Poziv na broj:</strong> {{ item.reference_number or '—' }}</p>
+                                            <p class="mb-1"><strong>Iznos:</strong> {{ "%.2f"|format(item.amount) }} RSD</p>
+                                            {% if item.purpose %}<p class="mb-3"><strong>Svrha:</strong> {{ item.purpose }}</p>{% endif %}
+
+                                            <div class="reggae-stripes my-3" style="height: 4px;"></div>
+
+                                            <label for="slip_id{{ item.id }}" class="form-label fw-semibold">Izaberite uplatnicu</label>
+                                            <select class="form-select" id="slip_id{{ item.id }}" name="slip_id" required>
+                                                <option value="" selected disabled>— Izaberite uplatnicu —</option>
+                                                {% for slip in slips %}
+                                                <option value="{{ slip.id }}">
+                                                    #{{ slip.id }} · {{ slip.customer.name }} · {{ "%.2f"|format(slip.total_amount) }} RSD
+                                                    (uplaćeno {{ "%.2f"|format(slip.amount_paid) }})
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                                            <button type="submit" class="btn btn-reggae btn-reggae-green">
+                                                <i class="fas fa-check me-1"></i> Poveži uplatu
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-check-circle fa-2x mb-2"></i>
+        <p class="mb-0">Nema neraspoređenih uplata. Sve uplate su povezane sa uplatnicama.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (document.getElementById('unallocated-table')) {
+            $('#unallocated-table').DataTable({
+                responsive: true,
+                stateSave: true,
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/sr-SP.json"
+                },
+                order: [[0, 'desc']],
+                columnDefs: [
+                    { responsivePriority: 1, targets: 2 },
+                    { responsivePriority: 2, targets: 4 },
+                    { responsivePriority: 3, targets: -1 },
+                    { orderable: false, targets: -1 }
+                ]
+            });
+        }
+    });
+</script>
+{% endblock %}

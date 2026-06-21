@@ -71,6 +71,7 @@ class Payment(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     statement_number = db.Column(db.String(50), nullable=False)
     items = db.relationship("PaymentItem", back_populates="payment")
+    unallocated_items = db.relationship("UnallocatedPayment", back_populates="payment", cascade="all, delete-orphan")
 
 class PaymentItem(db.Model):
     __tablename__ = "payment_items"
@@ -82,3 +83,17 @@ class PaymentItem(db.Model):
     note = db.Column(db.String(200), nullable=True, default="")
     payment = db.relationship("Payment", back_populates="items")
     payment_slip = db.relationship("PaymentSlip", back_populates="payment_items")
+
+class UnallocatedPayment(db.Model):
+    __tablename__ = "unallocated_payments"
+    id = db.Column(db.Integer, primary_key=True)
+    payment_id = db.Column(db.Integer, db.ForeignKey("payments.id"), nullable=False)
+    payer_name = db.Column(db.String(200), nullable=True)
+    reference_number = db.Column(db.String(50), nullable=True)
+    reference_model = db.Column(db.String(10), nullable=True)
+    amount = db.Column(db.Numeric(10, 2), nullable=False)
+    purpose = db.Column(db.String(300), nullable=True)
+    reason = db.Column(db.String(100), nullable=False)  #! razlog zašto uplata nije povezana sa uplatnicom
+    is_resolved = db.Column(db.Boolean, nullable=False, default=False)  #! da li je ručno povezana naknadno
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    payment = db.relationship("Payment", back_populates="unallocated_items")
